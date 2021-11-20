@@ -1,0 +1,12 @@
+{
+  "_template": "gh:cjolowicz/cookiecutter-hypermodern-python",
+  "author": "Julien Rossi",
+  "development_status": "Development Status :: 3 - Alpha",
+  "email": "mr.julien.rossi@gmail.com",
+  "friendly_name": "Football Track",
+  "github_user": "JulienMBABD",
+  "license": "MIT",
+  "package_name": "football_track",
+  "project_name": "football-track",
+  "version": "0.0.0"
+}
