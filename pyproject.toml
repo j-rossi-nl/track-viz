@@ -25,6 +25,7 @@ matplotlib = "^3.5.0"
 geopy = "^2.2.0"
 pyarrow = "^6.0.1"
 PyYAML = "^6.0"
+defusedxml = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -52,6 +53,8 @@ pyupgrade = "^2.29.1"
 furo = ">=2021.11.12"
 ipython = "^7.29.0"
 jupyterlab = "^3.2.4"
+nox = "^2021.10.1"
+nox-poetry = "^0.9.0"
 
 [tool.poetry.scripts]
 football-track = "football_track.__main__:main"
@@ -65,7 +68,7 @@ source = ["football_track"]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 100
+fail_under = 0
 
 [tool.mypy]
 strict = true
@@ -74,6 +77,17 @@ pretty = true
 show_column_numbers = true
 show_error_codes = true
 show_error_context = true
+
+[[tool.mypy.overrides]]
+module = [
+    "matplotlib.*",
+    "pandas.*",
+    "seaborn.*",
+    "geopy.*",
+    "yaml.*",
+    "defusedxml.*",
+]
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
