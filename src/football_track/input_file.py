@@ -2,8 +2,15 @@ import pandas as pd
 from lxml import etree
 from pathlib import Path
 
+from typing import List, Dict, Any
 
-def tcx_to_dataframe(tcx: Path, to_csv: Path) -> None:
+def _data_to_dataframe(data: List[Dict[str, Any]]) -> pd.DataFrame:
+    df = pd.DataFrame(data)
+    df["time"] = pd.to_datetime(df["time"])
+    return df
+
+
+def tcx_to_dataframe(tcx: Path, to: Path) -> None:
     tree = etree.parse(str(tcx))
     laps = tree.xpath("//*[name()='TrainingCenterDatabase']/*[name()='Activities']/*[name()='Activity']/*[name()='Lap']")
     assert len(laps) == 1
@@ -20,5 +27,22 @@ def tcx_to_dataframe(tcx: Path, to_csv: Path) -> None:
         sample["bpm"] = int(point.xpath("*[name()='HeartRateBpm']/*[name()='Value']")[0].text)
         data.append(sample)
 
-    df = pd.DataFrame(data)
-    df.to_csv(to_csv)
+    df = _data_to_dataframe(data)
+    df.to_csv(to, index=False)
+
+
+def gpx_to_dataframe(gpx: Path, to: Path) -> None:
+    tree = etree.parse(str(gpx))
+    trackpoints = tree.xpath("/*[name()='gpx']/*[name()='trk']/*[name()='trkseg']/*[name()='trkpt']")
+    n_trackpoints = len(trackpoints)
+    print(f"Tracking {n_trackpoints} trackpoints")
+    data = []
+    for point in trackpoints:
+        sample = {}
+        sample["time"] = point.xpath("*[name()='time']")[0].text
+        sample["lat"] = float(point.get("lat"))
+        sample["lon"] = float(point.get("lon"))
+        data.append(sample)
+
+    df = _data_to_dataframe(data)
+    df.to_csv(to, index=False)
