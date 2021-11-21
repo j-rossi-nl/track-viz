@@ -6,7 +6,8 @@ from pathlib import Path
 
 from .input_file import tcx_to_dataframe
 from .input_file import gpx_to_dataframe
-from .speed import plot_speed as command_plot_speed
+from .speed import plot_speed as plot_speed
+from .heatmap import heatmap as do_heatmap
 
 @click.group()
 @click.version_option()
@@ -49,8 +50,25 @@ def gpx_to_csv(**kwargs: Any) -> None:
     "--jpg",
     type=click.Path(exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path)
 )
-def plot_speed(**kwargs: Any) -> None:
-    command_plot_speed(**kwargs)
+def speed(**kwargs: Any) -> None:
+    plot_speed(**kwargs)
+
+
+@main.command()
+@click.option(
+    "--track",
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True, path_type=Path)
+)
+@click.option(
+    "--config",
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True, path_type=Path)
+)
+@click.option(
+    "--jpg",
+    type=click.Path(exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path)
+)
+def heatmap(**kwargs: Any) -> None:
+    do_heatmap(**kwargs)
 
 
 if __name__ == "__main__":

@@ -1392,7 +1392,7 @@ python-versions = ">=3.6"
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -1913,7 +1913,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e96ee008e3cca0da58b77725c62a51debaddd12dfbbf80a06a6b24f8aaa0b90a"
+content-hash = "cfc34c2a895d44be0fe5080c2afd96d65e1122d50f97aa3a6882835cee5deaf3"
 
 [metadata.files]
 alabaster = [
