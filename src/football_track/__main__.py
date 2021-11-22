@@ -96,7 +96,7 @@ def heatmap(**kwargs: Any) -> None:
 
 
 @main.command()
-def flask():
+def flask() -> None:
     """Have a web server GUI."""
     run_webserver()
 
