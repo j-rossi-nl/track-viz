@@ -1,26 +1,33 @@
-import os
+"""Run a Flask web server to create heatmap and speed graph."""
 import io
-
-from flask import Flask, render_template, request, send_file
-from werkzeug.utils import secure_filename
+from pathlib import Path
 from secrets import token_hex
 
-from .input_file import tcx_to_dataframe, gpx_to_dataframe
-from .heatmap import heatmap
-from .speed import plot_speed
+from flask import Flask
+from flask import render_template
+from flask import request
+from flask import send_file
+from werkzeug.utils import secure_filename
 
-from pathlib import Path
+from .heatmap import heatmap
+from .input_file import gpx_to_dataframe
+from .input_file import tcx_to_dataframe
+from .speed import plot_speed
 
 app = Flask(__name__)
 app.config["ALLOWED_EXTENSIONS"] = {"tcx", "gpx"}
 app.config["UPLOAD_FOLDER"] = "upload"
 
 
-@app.route('/heatmap', methods=['GET', 'POST'])
+@app.route("/heatmap", methods=["GET", "POST"])
 def create_heatmap():
-    if request.method == 'POST':
-        f = request.files['file']
-        fpath = Path(app.config["UPLOAD_FOLDER"]) / f"{token_hex(8)}_{secure_filename(f.filename)}"
+    """Handles incoming activity file and create heatmap."""
+    if request.method == "POST":
+        f = request.files["file"]
+        fpath = (
+            Path(app.config["UPLOAD_FOLDER"])
+            / f"{token_hex(8)}_{secure_filename(f.filename)}"
+        )
         f.save(fpath)
 
         csv_path = fpath.with_suffix(".csv")
@@ -30,7 +37,9 @@ def create_heatmap():
         elif suffix == ".gpx":
             gpx_to_dataframe(gpx=fpath, to=csv_path)
         else:
-            raise ValueError(f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}")
+            raise ValueError(
+                f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"
+            )
 
         heatmap_path = fpath.with_suffix(".jpg")
         heatmap(track=csv_path, config=Path("static/heatmap.yml"), jpg=heatmap_path)
@@ -44,14 +53,18 @@ def create_heatmap():
 
         return send_file(stream, mimetype="image/jpeg")
     else:
-        return render_template('upload_heatmap.html')
+        return render_template("upload_heatmap.html")
 
 
-@app.route('/speed', methods=['GET', 'POST'])
+@app.route("/speed", methods=["GET", "POST"])
 def create_speed_plot():
-    if request.method == 'POST':
-        f = request.files['file']
-        fpath = Path(app.config["UPLOAD_FOLDER"]) / f"{token_hex(8)}_{secure_filename(f.filename)}"
+    """Handles incoming activity file and create speed graph."""
+    if request.method == "POST":
+        f = request.files["file"]
+        fpath = (
+            Path(app.config["UPLOAD_FOLDER"])
+            / f"{token_hex(8)}_{secure_filename(f.filename)}"
+        )
         f.save(fpath)
 
         csv_path = fpath.with_suffix(".csv")
@@ -61,7 +74,9 @@ def create_speed_plot():
         elif suffix == ".gpx":
             gpx_to_dataframe(gpx=fpath, to=csv_path)
         else:
-            raise ValueError(f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}")
+            raise ValueError(
+                f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"
+            )
 
         speed_path = fpath.with_suffix(".jpg")
         plot_speed(track=csv_path, jpg=speed_path)
@@ -75,8 +90,9 @@ def create_speed_plot():
 
         return send_file(stream, mimetype="image/jpeg")
     else:
-        return render_template('upload_speed.html')
+        return render_template("upload_speed.html")
 
 
 def run_webserver():
+    """Run webserver."""
     app.run(debug=False)

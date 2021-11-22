@@ -10,6 +10,7 @@ from .input_file import tcx_to_dataframe
 from .speed import plot_speed as plot_speed
 from .webserver import run_webserver
 
+
 @click.group()
 @click.version_option()
 def main() -> None:
@@ -96,6 +97,7 @@ def heatmap(**kwargs: Any) -> None:
 
 @main.command()
 def flask():
+    """Have a web server GUI."""
     run_webserver()
 
 
