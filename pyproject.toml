@@ -26,6 +26,7 @@ geopy = "^2.2.0"
 pyarrow = "^6.0.1"
 PyYAML = "^6.0"
 defusedxml = "^0.7.1"
+Flask = "^2.0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

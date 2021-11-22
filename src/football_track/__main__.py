@@ -8,7 +8,7 @@ from .heatmap import heatmap as do_heatmap
 from .input_file import gpx_to_dataframe
 from .input_file import tcx_to_dataframe
 from .speed import plot_speed as plot_speed
-
+from .webserver import run_webserver
 
 @click.group()
 @click.version_option()
@@ -92,6 +92,11 @@ def speed(**kwargs: Any) -> None:
 def heatmap(**kwargs: Any) -> None:
     """CSV dataframe to heatmap."""
     do_heatmap(**kwargs)
+
+
+@main.command()
+def flask():
+    run_webserver()
 
 
 if __name__ == "__main__":
