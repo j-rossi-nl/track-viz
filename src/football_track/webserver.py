@@ -2,6 +2,7 @@
 import io
 from pathlib import Path
 from secrets import token_hex
+from tempfile import gettempdir
 
 from flask import Flask
 from flask import render_template
@@ -16,7 +17,7 @@ from .speed import plot_speed
 
 app = Flask(__name__)
 app.config["ALLOWED_EXTENSIONS"] = {"tcx", "gpx"}
-app.config["UPLOAD_FOLDER"] = "upload"
+app.config["UPLOAD_FOLDER"] = gettempdir()
 
 
 @app.route("/heatmap", methods=["GET", "POST"])
