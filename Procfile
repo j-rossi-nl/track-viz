@@ -1,1 +1,1 @@
-web: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | sed -e 's/allowed_executables = \["python3", "python"\]/allowed_executables = ["python3"]/' | python3 | sed -e 's/^/       /' && poetry run football-track flask --host 0.0.0.0
+web: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | sed -e 's/allowed_executables = \["python3", "python"\]/allowed_executables = ["python3"]/' | python3 | sed -e 's/^/       /' && source $HOME/.poetry/env && poetry run football-track flask --host 0.0.0.0
