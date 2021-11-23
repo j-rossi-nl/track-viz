@@ -21,7 +21,7 @@ except ImportError:
 
 
 package = "football_track"
-python_versions = ["3.8.8", "3.10"]
+python_versions = ["3.8.10", "3.10"]
 nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     "pre-commit",
