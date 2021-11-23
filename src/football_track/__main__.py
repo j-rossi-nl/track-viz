@@ -96,9 +96,11 @@ def heatmap(**kwargs: Any) -> None:
 
 
 @main.command()
-def flask() -> None:
+@click.option("--host", type=str, default="127.0.0.1")
+@click.option("--port", type=int, default=5000)
+def flask(**kwargs: Any) -> None:
     """Have a web server GUI."""
-    run_webserver()
+    run_webserver(**kwargs)
 
 
 if __name__ == "__main__":
