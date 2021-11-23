@@ -105,6 +105,6 @@ def create_speed_plot() -> ft.ResponseReturnValue:
         return render_template("upload_speed.html")
 
 
-def run_webserver() -> None:
+def run_webserver(host: str, port: int) -> None:
     """Run webserver."""
-    app.run(debug=False)
+    app.run(host=host, port=port, debug=False)
