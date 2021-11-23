@@ -1,0 +1,22 @@
+{
+  "name": "Graphs from Activity Tracker",
+  "description": "Build graphs and viz from activity tracker datafiles.",
+  "keywords": ["fitness", "dataviz"],
+  "website": "https://github.com/JulienMBABD/football-track",
+  "repository": "https://github.com/JulienMBABD/football-track",
+  "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScs-3NFazRR3S9jZY0fKjzP54oH9WyPMIloQ&usqp=CAU",
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "https://github.com/moneymeets/python-poetry-buildpack.git"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
