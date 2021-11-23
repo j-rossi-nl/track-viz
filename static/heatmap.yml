@@ -1,0 +1,11 @@
+heatmap:
+  background:
+    image: "static/map.jpg"
+    min_lon: 4.2442
+    max_lon: 4.2462
+    min_lat: 52.0773
+    max_lat: 52.0785
+
+  plot:
+    levels: 100
+    colormap: "rocket_r"
