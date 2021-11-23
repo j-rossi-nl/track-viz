@@ -8,6 +8,7 @@ from .heatmap import heatmap as do_heatmap
 from .input_file import gpx_to_dataframe
 from .input_file import tcx_to_dataframe
 from .speed import plot_speed as plot_speed
+from .webserver import run_webserver
 
 
 @click.group()
@@ -92,6 +93,14 @@ def speed(**kwargs: Any) -> None:
 def heatmap(**kwargs: Any) -> None:
     """CSV dataframe to heatmap."""
     do_heatmap(**kwargs)
+
+
+@main.command()
+@click.option("--host", type=str, default="127.0.0.1")
+@click.option("--port", type=int, default=5000)
+def flask(**kwargs: Any) -> None:
+    """Have a web server GUI."""
+    run_webserver(**kwargs)
 
 
 if __name__ == "__main__":
