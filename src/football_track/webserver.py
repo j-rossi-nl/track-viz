@@ -7,6 +7,7 @@ from tempfile import gettempdir
 import flask.typing as ft
 from flask import abort
 from flask import Flask
+from flask import Markup
 from flask import render_template
 from flask import request
 from flask import send_file
@@ -90,17 +91,18 @@ def create_speed_plot() -> ft.ResponseReturnValue:
                 f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"
             )
 
-        speed_path = fpath.with_suffix(".jpg")
+        speed_path = fpath.with_suffix(".svg")
         plot_speed(track=csv_path, jpg=speed_path)
 
-        img_bytes = speed_path.read_bytes()
-        stream = io.BytesIO(img_bytes)
+        img_xml = speed_path.read_text()
 
         fpath.unlink()
         csv_path.unlink()
-        speed_path.unlink()
+        # speed_path.unlink()
 
-        return send_file(stream, mimetype="image/jpeg")
+        return render_template(
+            "show_graph.html", page_title="Speed Graphs", img_data=Markup(img_xml)
+        )
     else:
         return render_template("upload_speed.html")
 

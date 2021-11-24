@@ -1,11 +1,14 @@
 """Create a speed graph from a tracking dataframe."""
 from pathlib import Path
 
+import matplotlib as mpl
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from geopy import distance
+
+mpl.use("Agg")
 
 
 def plot_speed(track: Path, jpg: Path) -> None:
