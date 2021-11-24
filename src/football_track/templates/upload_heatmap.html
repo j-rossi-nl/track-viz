@@ -2,12 +2,48 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='upload.css') }}"
+    />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon_football_track.png') }}"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="{{ url_for('static', filename='favicon_football_track.png') }}"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Heatmap TrimClub</title>
   </head>
   <body>
-    <form action="/heatmap" method="POST" enctype="multipart/form-data">
-      <input type="file" name="file" />
-      <input type="submit" />
-    </form>
+    <div class="wrapper">
+      <p
+        style="
+          font-family: Arial, Helvetica, sans-serif;
+          color: antiquewhite;
+          font-size: 60px;
+        "
+      >
+        Speed Graph
+      </p>
+    </div>
+    <div class="wrapper">
+      <div class="file-upload">
+        <form action="/heatmap" method="POST" enctype="multipart/form-data">
+          <input
+            type="file"
+            name="file"
+            onchange="javascript:this.form.submit();"
+          />
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>
+        </form>
+      </div>
+    </div>
   </body>
 </html>
