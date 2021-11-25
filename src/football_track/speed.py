@@ -1,16 +1,22 @@
 """Create a speed graph from a tracking dataframe."""
 from pathlib import Path
 
+import matplotlib as mpl
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from geopy import distance
 
+mpl.use("Agg")
+sns.set_theme(
+    style="whitegrid",
+    palette="pastel",
+    rc={"axes.facecolor": "#2590eb", "figure.facecolor": "#2590eb"},
+)
 
-def plot_speed(track: Path, jpg: Path) -> None:
-    """Create the spped plot."""
-    df = pd.read_csv(track, parse_dates=["time"])
+
+def _track_2_speeds(df: pd.DataFrame) -> pd.DataFrame:
     lats = df["lat"].values
     lons = df["lon"].values
     times = df["time"].values
@@ -45,11 +51,28 @@ def plot_speed(track: Path, jpg: Path) -> None:
         pd.Timestamp("2021-01-01 00:00") + movements["delta_time"].cumsum()
     )
 
-    sns.set_theme()
-    fig, ax = plt.subplots(figsize=(40, 4))
-    movements.plot.area(x="elapsed_time", y="speed_kmh", ax=ax)
-    ax.grid(visible=True)
-    ax.set_ylim(0, 16)
+    movements.set_index("elapsed_time", inplace=True)
+    return movements
 
+
+def plot_speed(track: Path, img: Path) -> None:
+    """Create the speed plot."""
+    df = pd.read_csv(track, parse_dates=["time"])
+    movements = _track_2_speeds(df)
+
+    fig, ax = plt.subplots(figsize=(16, 8))
+    movements.plot.area(y="speed_kmh", ax=ax)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%M:%S"))
-    fig.savefig(jpg)
+    fig.savefig(img)
+
+
+def plot_speed_moving_avg(track: Path, img: Path) -> None:
+    """Create the speed plot."""
+    df = pd.read_csv(track, parse_dates=["time"])
+    movements = _track_2_speeds(df)
+    movements["speed_moving_avg_1min"] = movements["speed_kmh"].rolling("60s").mean()
+
+    fig, ax = plt.subplots(figsize=(16, 8))
+    movements.plot.area(y="speed_moving_avg_1min", ax=ax)
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%M:%S"))
+    fig.savefig(img)
