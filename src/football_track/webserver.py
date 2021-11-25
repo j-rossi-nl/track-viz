@@ -7,7 +7,7 @@ from tempfile import gettempdir
 import flask.typing as ft
 from flask import abort
 from flask import Flask
-from flask import Markup
+from flask import Markup  # type: ignore
 from flask import render_template
 from flask import request
 from flask import send_file
