@@ -17,7 +17,7 @@ from .heatmap import heatmap
 from .input_file import gpx_to_dataframe
 from .input_file import tcx_to_dataframe
 from .speed import plot_speed
-
+from .speed import plot_speed_moving_avg
 
 app = Flask(__name__)
 app.config["ALLOWED_EXTENSIONS"] = {"tcx", "gpx"}
@@ -92,16 +92,21 @@ def create_speed_plot() -> ft.ResponseReturnValue:
             )
 
         speed_path = fpath.with_suffix(".svg")
-        plot_speed(track=csv_path, jpg=speed_path)
+        plot_speed(track=csv_path, img=speed_path)
+        speed_xml = speed_path.read_text()
 
-        img_xml = speed_path.read_text()
+        plot_speed_moving_avg(track=csv_path, img=speed_path)
+        speed_moving_avg_xml = speed_path.read_text()
 
         fpath.unlink()
         csv_path.unlink()
-        # speed_path.unlink()
+        speed_path.unlink()
 
         return render_template(
-            "show_graph.html", page_title="Speed Graphs", img_data=Markup(img_xml)
+            "show_graph.html",
+            page_title="Speed Graphs",
+            img_speed=Markup(speed_xml),
+            img_speed_moving_avg=Markup(speed_moving_avg_xml),
         )
     else:
         return render_template("upload_speed.html")
