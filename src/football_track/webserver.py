@@ -5,9 +5,9 @@ from secrets import token_hex
 from tempfile import gettempdir
 
 import flask.typing as ft
-from flask import abort
 from flask import Flask
 from flask import Markup  # type: ignore
+from flask import redirect
 from flask import render_template
 from flask import request
 from flask import send_file
@@ -20,8 +20,13 @@ from .speed import plot_speed
 from .speed import plot_speed_moving_avg
 
 app = Flask(__name__)
-app.config["ALLOWED_EXTENSIONS"] = {"tcx", "gpx"}
+ALLOWED_EXTENSIONS = {".tcx", ".gpx"}
+app.config["MAX_CONTENT_LENGTH"] = 4 * 1024 * 1024  # 4MB
 app.config["UPLOAD_FOLDER"] = gettempdir()
+
+
+def _allowed_file(filename: str) -> bool:
+    return Path(filename).suffix in ALLOWED_EXTENSIONS
 
 
 @app.route("/heatmap", methods=["GET", "POST"])
@@ -30,8 +35,8 @@ def create_heatmap() -> ft.ResponseReturnValue:
     if request.method == "POST":
         f = request.files["file"]
 
-        if f.filename is None:
-            abort(500)
+        if f.filename is None or not _allowed_file(f.filename):
+            return redirect(request.url)
 
         fpath = (
             Path(app.config["UPLOAD_FOLDER"])
@@ -71,8 +76,8 @@ def create_speed_plot() -> ft.ResponseReturnValue:
     if request.method == "POST":
         f = request.files["file"]
 
-        if f.filename is None:
-            abort(500)
+        if f.filename is None or not _allowed_file(f.filename):
+            return redirect(request.url)
 
         fpath = (
             Path(app.config["UPLOAD_FOLDER"])
