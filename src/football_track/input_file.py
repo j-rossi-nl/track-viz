@@ -28,6 +28,7 @@ def tcx_to_dataframe(tcx: Path, to: Path) -> None:
         sample["time"] = point.find(".//tcx:Time", ns).text
         sample["lat"] = float(point.find(".//tcx:LatitudeDegrees", ns).text)
         sample["lon"] = float(point.find(".//tcx:LongitudeDegrees", ns).text)
+        sample["alt"] = float(point.find(".//tcx:AltitudeMeters", ns).text)
         sample["bpm"] = int(point.find(".//tcx:HeartRateBpm/tcx:Value", ns).text)
         data.append(sample)
 
@@ -49,6 +50,7 @@ def gpx_to_dataframe(gpx: Path, to: Path) -> None:
         sample["time"] = point.find(".//gpx:time", ns).text
         sample["lat"] = float(point.get("lat"))
         sample["lon"] = float(point.get("lon"))
+        sample["alt"] = point.find(".//gpx:ele", ns).text
         data.append(sample)
 
     df = _data_to_dataframe(data)

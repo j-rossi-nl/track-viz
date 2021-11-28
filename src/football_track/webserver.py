@@ -16,6 +16,7 @@ from werkzeug.utils import secure_filename
 from .heatmap import heatmap
 from .input_file import gpx_to_dataframe
 from .input_file import tcx_to_dataframe
+from .speed import plot_acceleration
 from .speed import plot_speed
 from .speed import plot_speed_moving_avg
 
@@ -103,6 +104,9 @@ def create_speed_plot() -> ft.ResponseReturnValue:
         plot_speed_moving_avg(track=csv_path, img=speed_path)
         speed_moving_avg_xml = speed_path.read_text()
 
+        plot_acceleration(track=csv_path, img=speed_path)
+        acceleration_xml = speed_path.read_text()
+
         fpath.unlink()
         csv_path.unlink()
         speed_path.unlink()
@@ -112,6 +116,7 @@ def create_speed_plot() -> ft.ResponseReturnValue:
             page_title="Speed Graphs",
             img_speed=Markup(speed_xml),
             img_speed_moving_avg=Markup(speed_moving_avg_xml),
+            img_acceleration=Markup(acceleration_xml),
         )
     else:
         return render_template("upload_speed.html")

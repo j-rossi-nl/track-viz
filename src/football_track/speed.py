@@ -17,36 +17,38 @@ sns.set_theme(
 
 
 def _track_2_speeds(df: pd.DataFrame) -> pd.DataFrame:
-    lats = df["lat"].values
-    lons = df["lon"].values
-    times = df["time"].values
+    movements = df.copy(deep=True)
+    movements["delta_time"] = df["time"].diff()
+    for coord in ["lon", "lat"]:
+        movements[f"prev_{coord}"] = movements[coord].shift()
+    movements["delta_alt_m"] = movements["alt"].diff()
+    movements = movements.dropna()
 
-    data = []
-    for time, lat, lon, prev_time, prev_lat, prev_lon in zip(
-        times[1:], lats[1:], lons[1:], times, lats, lons
-    ):
-        data.append(
-            {
-                "delta_time": time - prev_time,
-                "lat": lat,
-                "prev_lat": prev_lat,
-                "lon": lon,
-                "prev_lon": prev_lon,
-            }
-        )
-
-    movements = pd.DataFrame(data)
-    movements["distance_m"] = movements.apply(
+    # geopy gives only geodesic distance
+    movements["ground_distance_m"] = movements.apply(
         lambda x: distance.distance(
             (x["lat"], x["lon"]), (x["prev_lat"], x["prev_lon"])
         ).meters,
         axis=1,
     )
-    movements["speed_kmh"] = (
-        3.6 * movements["distance_m"] / movements["delta_time"].dt.seconds
+
+    # accounting for altitude change, using Pythagorus
+    movements["distance_m"] = (
+        movements["ground_distance_m"] ** 2 + movements["delta_alt_m"] ** 2
+    ) ** 0.5
+
+    movements["speed_ms"] = movements["distance_m"] / movements["delta_time"].dt.seconds
+    movements["speed_kmh"] = movements["speed_ms"] * 3.6
+
+    movements["delta_speed_ms"] = movements["speed_ms"].diff()
+    movements = movements.dropna()
+
+    movements["acceleration_ms2"] = (
+        movements["delta_speed_ms"] / movements["delta_time"].dt.seconds
     )
 
     # only pd.timestamp  has strftime, this is a dirty trick
+    # noinspection PyTypeChecker
     movements["elapsed_time"] = (
         pd.Timestamp("2021-01-01 00:00") + movements["delta_time"].cumsum()
     )
@@ -74,5 +76,16 @@ def plot_speed_moving_avg(track: Path, img: Path) -> None:
 
     fig, ax = plt.subplots(figsize=(16, 8))
     movements.plot.area(y="speed_moving_avg_1min", ax=ax)
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%M:%S"))
+    fig.savefig(img)
+
+
+def plot_acceleration(track: Path, img: Path) -> None:
+    """Create the speed plot."""
+    df = pd.read_csv(track, parse_dates=["time"])
+    movements = _track_2_speeds(df)
+
+    fig, ax = plt.subplots(figsize=(16, 8))
+    movements.plot.area(y="acceleration_ms2", stacked=False, ax=ax)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%M:%S"))
     fig.savefig(img)
