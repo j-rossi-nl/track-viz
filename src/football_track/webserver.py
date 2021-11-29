@@ -1,5 +1,6 @@
 """Run a Flask web server to create heatmap and speed graph."""
-import io
+from base64 import b64encode
+from io import BytesIO
 from io import StringIO
 from pathlib import Path
 from secrets import token_hex
@@ -11,14 +12,14 @@ from flask import Markup  # type: ignore
 from flask import redirect
 from flask import render_template
 from flask import request
-from flask import send_file
 from werkzeug.utils import secure_filename
 
-from .heatmap import heatmap
+from .heatmap import heatmap_from_dataframe
 from .input_file import gpx_to_dataframe
 from .input_file import tcx_to_dataframe
 from .speed import web_plot_speed_climb_kde
 from .speed import web_plot_speed_elevation
+
 
 app = Flask(__name__)
 ALLOWED_EXTENSIONS = {".tcx", ".gpx"}
@@ -45,28 +46,26 @@ def create_heatmap() -> ft.ResponseReturnValue:
         )
         f.save(fpath)
 
-        csv_path = fpath.with_suffix(".csv")
         suffix = fpath.suffix
         if suffix == ".tcx":
-            tcx_to_dataframe(tcx=fpath, to=csv_path)
+            track = tcx_to_dataframe(tcx=fpath, to=None)
         elif suffix == ".gpx":
-            gpx_to_dataframe(gpx=fpath, to=csv_path)
+            track = gpx_to_dataframe(gpx=fpath, to=None)
         else:
             raise ValueError(
                 f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"
             )
 
-        heatmap_path = fpath.with_suffix(".jpg")
-        heatmap(track=csv_path, config=Path("static/heatmap.yml"), img=heatmap_path)
-
-        img_bytes = heatmap_path.read_bytes()
-        stream = io.BytesIO(img_bytes)
+        fig = heatmap_from_dataframe(
+            track=track, config=Path("static/heatmap.yml"), img=None
+        )
+        img_bytes = BytesIO()
+        fig.savefig(img_bytes, format="jpg")
+        img_b64bytes = b64encode(img_bytes.getvalue()).decode("utf-8")
 
         fpath.unlink()
-        csv_path.unlink()
-        heatmap_path.unlink()
 
-        return send_file(stream, mimetype="image/jpeg")
+        return render_template("show_heatmap.html", img_data=img_b64bytes)
     else:
         return render_template("upload_heatmap.html")
 

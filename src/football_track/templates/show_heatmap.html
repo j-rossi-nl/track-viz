@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='upload.css') }}"
+    />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon_football_track.png') }}"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="{{ url_for('static', filename='favicon_football_track.png') }}"
+    />
+    <title>{{ page_title }}</title>
+  </head>
+  <body>
+    <div class="full_screen">
+      <img src="data:image/jpeg;base64,{{ img_data }}" alt="Heatmap" />
+    </div>
+  </body>
+</html>
