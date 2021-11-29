@@ -104,7 +104,7 @@ def speed_moving(**kwargs: Any) -> None:
     ),
 )
 @click.option(
-    "--jpg",
+    "--img",
     type=click.Path(
         exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path
     ),

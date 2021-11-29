@@ -8,7 +8,7 @@ import seaborn as sns
 import yaml
 
 
-def heatmap(track: Path, config: Path, jpg: Path) -> None:
+def heatmap(track: Path, config: Path, img: Path) -> None:
     """Create heatmap."""
     df = pd.read_csv(track, parse_dates=["time"])
     with config.open("r") as src:
@@ -55,4 +55,4 @@ def heatmap(track: Path, config: Path, jpg: Path) -> None:
     ax.set_yticks([])
 
     # Save
-    fig.savefig(jpg)
+    fig.savefig(img)
