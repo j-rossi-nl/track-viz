@@ -4,7 +4,6 @@ from typing import Optional
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
@@ -17,7 +16,7 @@ def heatmap_from_dataframe(
     with config.open("r") as src:
         conf = yaml.safe_load(src)
 
-    img_data: np.array = plt.imread(conf["heatmap"]["background"]["image"])
+    img_data = plt.imread(conf["heatmap"]["background"]["image"])
 
     min_lon, max_lon = (
         conf["heatmap"]["background"]["min_lon"],
@@ -66,4 +65,4 @@ def heatmap_from_dataframe(
 def heatmap(track: Path, config: Path, img: Optional[Path]) -> mpl.figure.Figure:
     """Create heatmap."""
     df = pd.read_csv(track, parse_dates=["time"])
-    return heatmap_from_dataframe(df)
+    return heatmap_from_dataframe(track=df, config=config, img=img)
