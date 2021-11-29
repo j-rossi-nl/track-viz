@@ -1,5 +1,7 @@
 """Run a Flask web server to create heatmap and speed graph."""
-import io
+from base64 import b64encode
+from io import BytesIO
+from io import StringIO
 from pathlib import Path
 from secrets import token_hex
 from tempfile import gettempdir
@@ -10,14 +12,14 @@ from flask import Markup  # type: ignore
 from flask import redirect
 from flask import render_template
 from flask import request
-from flask import send_file
 from werkzeug.utils import secure_filename
 
-from .heatmap import heatmap
+from .heatmap import heatmap_from_dataframe
 from .input_file import gpx_to_dataframe
 from .input_file import tcx_to_dataframe
-from .speed import plot_speed
-from .speed import plot_speed_moving_avg
+from .speed import web_plot_speed_climb_kde
+from .speed import web_plot_speed_elevation
+
 
 app = Flask(__name__)
 ALLOWED_EXTENSIONS = {".tcx", ".gpx"}
@@ -44,34 +46,32 @@ def create_heatmap() -> ft.ResponseReturnValue:
         )
         f.save(fpath)
 
-        csv_path = fpath.with_suffix(".csv")
         suffix = fpath.suffix
         if suffix == ".tcx":
-            tcx_to_dataframe(tcx=fpath, to=csv_path)
+            track = tcx_to_dataframe(tcx=fpath, to=None)
         elif suffix == ".gpx":
-            gpx_to_dataframe(gpx=fpath, to=csv_path)
+            track = gpx_to_dataframe(gpx=fpath, to=None)
         else:
             raise ValueError(
                 f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"
             )
 
-        heatmap_path = fpath.with_suffix(".jpg")
-        heatmap(track=csv_path, config=Path("static/heatmap.yml"), jpg=heatmap_path)
-
-        img_bytes = heatmap_path.read_bytes()
-        stream = io.BytesIO(img_bytes)
+        fig = heatmap_from_dataframe(
+            track=track, config=Path("static/heatmap.yml"), img=None
+        )
+        img_bytes = BytesIO()
+        fig.savefig(img_bytes, format="jpg")
+        img_b64bytes = b64encode(img_bytes.getvalue()).decode("utf-8")
 
         fpath.unlink()
-        csv_path.unlink()
-        heatmap_path.unlink()
 
-        return send_file(stream, mimetype="image/jpeg")
+        return render_template("show_heatmap.html", img_data=img_b64bytes)
     else:
         return render_template("upload_heatmap.html")
 
 
 @app.route("/speed", methods=["GET", "POST"])
-def create_speed_plot() -> ft.ResponseReturnValue:
+def create_speed_plots() -> ft.ResponseReturnValue:
     """Handles incoming activity file and create speed graph."""
     if request.method == "POST":
         f = request.files["file"]
@@ -85,33 +85,31 @@ def create_speed_plot() -> ft.ResponseReturnValue:
         )
         f.save(fpath)
 
-        csv_path = fpath.with_suffix(".csv")
         suffix = fpath.suffix
         if suffix == ".tcx":
-            tcx_to_dataframe(tcx=fpath, to=csv_path)
+            track = tcx_to_dataframe(tcx=fpath, to=None)
         elif suffix == ".gpx":
-            gpx_to_dataframe(gpx=fpath, to=csv_path)
+            track = gpx_to_dataframe(gpx=fpath, to=None)
         else:
             raise ValueError(
                 f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"
             )
 
-        speed_path = fpath.with_suffix(".svg")
-        plot_speed(track=csv_path, img=speed_path)
-        speed_xml = speed_path.read_text()
+        fig = web_plot_speed_elevation(track=track)
+        speed_terrain_xml = StringIO()
+        fig.savefig(speed_terrain_xml, format="svg")
 
-        plot_speed_moving_avg(track=csv_path, img=speed_path)
-        speed_moving_avg_xml = speed_path.read_text()
+        fig = web_plot_speed_climb_kde(track=track)
+        speed_terrain_kde_xml = StringIO()
+        fig.savefig(speed_terrain_kde_xml, format="svg")
 
         fpath.unlink()
-        csv_path.unlink()
-        speed_path.unlink()
 
         return render_template(
             "show_graph.html",
             page_title="Speed Graphs",
-            img_speed=Markup(speed_xml),
-            img_speed_moving_avg=Markup(speed_moving_avg_xml),
+            img_speed_terrain=Markup(speed_terrain_xml.getvalue()),
+            img_speed_terrain_kde=Markup(speed_terrain_kde_xml.getvalue()),
         )
     else:
         return render_template("upload_speed.html")

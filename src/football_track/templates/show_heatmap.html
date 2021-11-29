@@ -22,7 +22,8 @@
     <title>{{ page_title }}</title>
   </head>
   <body>
-    <div class="full_screen">{{ img_speed_terrain }}</div>
-    <div class="full_screen">{{ img_speed_terrain_kde }}</div>
+    <div class="full_screen">
+      <img src="data:image/jpeg;base64,{{ img_data }}" alt="Heatmap" />
+    </div>
   </body>
 </html>
