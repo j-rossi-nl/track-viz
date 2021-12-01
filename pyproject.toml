@@ -27,7 +27,7 @@ PyYAML = "^6.0"
 defusedxml = "^0.7.1"
 Flask = "^2.0.2"
 python-dotenv = "^0.19.2"
-poetry = "^1.1.11"
+poetry = "^1.1.12"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
