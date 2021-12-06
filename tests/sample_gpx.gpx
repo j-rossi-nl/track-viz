@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<gpx creator="Pacer for iOS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+<metadata>
+	<name>dimanche Le matin Course</name>
+	<desc></desc>
+	<author>
+		<name>Guillaume</name>
+	</author>
+	<link href="https://share.mypacer.com/track/OfgDCFYnJIy6pFAnP4gQBG">
+		<text>dimanche Le matin Course</text>
+		<type>text/html</type>
+	</link>
+	<time>2021-10-31T10:58:34.000Z</time>
+</metadata>
+<trk>
+	<name>dimanche Le matin Course</name>
+	<desc></desc>
+	<trkseg>
+		<trkpt lat="48.846802" lon="2.465819">
+			<ele>66.683525</ele>
+			<time>2021-10-31T10:58:34.000Z</time>
+		</trkpt>
+		<trkpt lat="48.846749" lon="2.465669">
+			<ele>66.501213</ele>
+			<time>2021-10-31T10:58:39.000Z</time>
+		</trkpt>
+		<trkpt lat="48.846676" lon="2.465546">
+			<ele>67.318563</ele>
+			<time>2021-10-31T10:58:44.000Z</time>
+		</trkpt>
+		<trkpt lat="48.846566" lon="2.465386">
+			<ele>66.835194</ele>
+			<time>2021-10-31T10:58:49.000Z</time>
+		</trkpt>
+		<trkpt lat="48.846469" lon="2.465230">
+			<ele>66.523933</ele>
+			<time>2021-10-31T10:58:54.000Z</time>
+		</trkpt>
+	</trkseg>
+</trk>
+</gpx>

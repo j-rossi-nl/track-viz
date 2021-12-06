@@ -7,6 +7,8 @@ import pandas as pd
 import seaborn as sns
 import yaml
 
+from .input_file import TrackingColumn
+
 
 def heatmap_from_dataframe(track: pd.DataFrame, config: Path) -> mpl.figure.Figure:
     """Create heatmap."""
@@ -24,10 +26,10 @@ def heatmap_from_dataframe(track: pd.DataFrame, config: Path) -> mpl.figure.Figu
         conf["heatmap"]["background"]["max_lat"],
     )
 
-    track["lon_x"] = track["lon"].apply(
+    track["lon_x"] = track[TrackingColumn.LONGITUDE].apply(
         lambda x: img_data.shape[0] * (x - min_lon) / (max_lon - min_lon)
     )
-    track["lat_y"] = track["lat"].apply(
+    track["lat_y"] = track[TrackingColumn.LATITUDE].apply(
         lambda y: img_data.shape[1] * (y - min_lat) / (max_lat - min_lat)
     )
 

@@ -10,6 +10,16 @@ import pandas as pd
 from defusedxml.ElementTree import parse
 
 
+class TrackingColumn:
+    """Names of columns in a tracking dataframe."""
+
+    TIME = "time"
+    LATITUDE = "lat"
+    LONGITUDE = "lon"
+    ALTITUDE = "alt"
+    HEARTBEAT = "bpm"
+
+
 def _float(x: Optional[str]) -> float:
     if x is not None:
         return float(x)
@@ -19,7 +29,7 @@ def _float(x: Optional[str]) -> float:
 
 def _data_to_dataframe(data: List[Dict[str, Any]]) -> pd.DataFrame:
     df = pd.DataFrame(data)
-    df["time"] = pd.to_datetime(df["time"])
+    df[TrackingColumn.TIME] = pd.to_datetime(df[TrackingColumn.TIME])
     return df
 
 
@@ -34,11 +44,19 @@ def tcx_to_dataframe(tcx: Path) -> pd.DataFrame:
     data = []
     for point in trackpoints:
         sample = {
-            "time": point.find(".//tcx:Time", ns).text,
-            "lat": _float(point.find(".//tcx:LatitudeDegrees", ns).text),
-            "lon": _float(point.find(".//tcx:LongitudeDegrees", ns).text),
-            "alt": _float(point.find(".//tcx:AltitudeMeters", ns).text),
-            "bpm": int(point.find(".//tcx:HeartRateBpm/tcx:Value", ns).text),
+            TrackingColumn.TIME: point.find(".//tcx:Time", ns).text,
+            TrackingColumn.LATITUDE: _float(
+                point.find(".//tcx:LatitudeDegrees", ns).text
+            ),
+            TrackingColumn.LONGITUDE: _float(
+                point.find(".//tcx:LongitudeDegrees", ns).text
+            ),
+            TrackingColumn.ALTITUDE: _float(
+                point.find(".//tcx:AltitudeMeters", ns).text
+            ),
+            TrackingColumn.HEARTBEAT: int(
+                point.find(".//tcx:HeartRateBpm/tcx:Value", ns).text
+            ),
         }
         data.append(sample)
 
@@ -57,10 +75,10 @@ def gpx_to_dataframe(gpx: Path) -> pd.DataFrame:
     data = []
     for point in trackpoints:
         sample = {
-            "time": point.find(".//gpx:time", ns).text,
-            "lat": _float(point.get("lat")),
-            "lon": _float(point.get("lon")),
-            "alt": _float(point.find(".//gpx:ele", ns).text),
+            TrackingColumn.TIME: point.find(".//gpx:time", ns).text,
+            TrackingColumn.LATITUDE: _float(point.get("lat")),
+            TrackingColumn.LONGITUDE: _float(point.get("lon")),
+            TrackingColumn.ALTITUDE: _float(point.find(".//gpx:ele", ns).text),
         }
         data.append(sample)
 

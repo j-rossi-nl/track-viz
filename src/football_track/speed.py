@@ -10,6 +10,8 @@ import pandas as pd
 import seaborn as sns
 from geopy import distance
 
+from .input_file import TrackingColumn
+
 mpl.use("Agg")
 sns.set_theme(
     style="whitegrid",
@@ -24,12 +26,32 @@ plt.rcParams["figure.figsize"] = (20, 10)
 
 
 def track_2_movements(df: pd.DataFrame) -> pd.DataFrame:
-    """Transform tracking information to time series of speed and other metrics."""
+    """Transform tracking information to time series of speed and other metrics.
+
+    List of fields in the movements dataframe:
+    * delta_time: time difference between one sample and the previous one
+    * prev_lon, prev_lat: longitude / latitude of previous tracking point
+    * delta_alt_m: altitude difference in meters between current sample and previous sample
+    * elapsed_time: timestamp of a tracking point, considering the run started on Jan 1 2021 at 00:00
+    * ground_distance_m: distance over earth surface covered between previous point and current point, in meters
+    * distance_m: distance in meters between previous point and current point, taking altitude difference into account
+    * speed_ms: speed at the current point in meters per second
+    * speed_kmh: speed in kilometers per hour
+    * speed_moving_avg_1min: moving average of the speed over the last minute, in kilometers per hour
+    * delta_speed_ms: change in speed in meters per second
+    * delta_moving_avg_1min: change in moving average in kilometers per hour
+    * acceleration_ms2: acceleration in meters per square meters
+    * use_point: bool indicates whether the point is "usable"
+
+    The sampling frequency is identified as the most frequent time difference between 2 samples. Any time this time
+    difference is more than 2 times this sampling frequency, we mark the first point AFTER the gap with FALSE in
+    field "use_point".
+    """
     movements = df.copy(deep=True)
-    movements["delta_time"] = df["time"].diff()
-    for coord in ["lon", "lat"]:
+    movements["delta_time"] = df[TrackingColumn.TIME].diff()
+    for coord in [TrackingColumn.LONGITUDE, TrackingColumn.LATITUDE]:
         movements[f"prev_{coord}"] = movements[coord].shift()
-    movements["delta_alt_m"] = movements["alt"].diff()
+    movements["delta_alt_m"] = movements[TrackingColumn.ALTITUDE].diff()
     movements = movements.dropna()
 
     # only pd.timestamp  has strftime, this is a dirty trick
@@ -42,7 +64,11 @@ def track_2_movements(df: pd.DataFrame) -> pd.DataFrame:
     # geopy gives only geodesic distance
     movements["ground_distance_m"] = movements.apply(
         lambda x: distance.distance(
-            (x["lat"], x["lon"]), (x["prev_lat"], x["prev_lon"])
+            (x[TrackingColumn.LATITUDE], x[TrackingColumn.LONGITUDE]),
+            (
+                x[f"prev_{TrackingColumn.LATITUDE}"],
+                x[f"prev_{TrackingColumn.LONGITUDE}"],
+            ),
         ).meters,
         axis=1,
     )
@@ -70,7 +96,7 @@ def track_2_movements(df: pd.DataFrame) -> pd.DataFrame:
         lambda x: x <= 2 * freq_s
     )
 
-    for measure in ["speed_moving_avg_1min", "alt"]:
+    for measure in ["speed_moving_avg_1min", TrackingColumn.ALTITUDE]:
         movements[measure] = movements[["use_point", measure]].apply(
             lambda x: x[measure] if x["use_point"] else np.nan, axis=1
         )
@@ -80,7 +106,7 @@ def track_2_movements(df: pd.DataFrame) -> pd.DataFrame:
 
 def plot_movement_field(movements: pd.DataFrame, mvt_field: str) -> mpl.figure.Figure:
     """Standard plot for 1 field of the movements dataframe."""
-    fig, ax = plt.subplots(figsize=(16, 8))
+    fig, ax = plt.subplots()
     movements.plot.area(y=mvt_field, stacked=False, ax=ax)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%M:%S"))
     return fig

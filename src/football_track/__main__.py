@@ -33,8 +33,9 @@ def main() -> None:
 )
 def tcx_to_csv(**kwargs: Any) -> None:
     """TCX file to CSV dataframe."""
+    to = kwargs.pop("to")
     df = tcx_to_dataframe(**kwargs)
-    df.to_csv(kwargs["to"], index=False)
+    df.to_csv(to, index=False)
 
 
 @main.command()
@@ -52,8 +53,9 @@ def tcx_to_csv(**kwargs: Any) -> None:
 )
 def gpx_to_csv(**kwargs: Any) -> None:
     """GPX file to CSV dataframe."""
+    to = kwargs.pop("to")
     df = gpx_to_dataframe(**kwargs)
-    df.to_csv(kwargs["to"], index=False)
+    df.to_csv(to, index=False)
 
 
 @main.command()
