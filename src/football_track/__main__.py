@@ -33,7 +33,8 @@ def main() -> None:
 )
 def tcx_to_csv(**kwargs: Any) -> None:
     """TCX file to CSV dataframe."""
-    tcx_to_dataframe(**kwargs)
+    df = tcx_to_dataframe(**kwargs)
+    df.to_csv(kwargs["to"], index=False)
 
 
 @main.command()
@@ -51,7 +52,8 @@ def tcx_to_csv(**kwargs: Any) -> None:
 )
 def gpx_to_csv(**kwargs: Any) -> None:
     """GPX file to CSV dataframe."""
-    gpx_to_dataframe(**kwargs)
+    df = gpx_to_dataframe(**kwargs)
+    df.to_csv(kwargs["to"], index=False)
 
 
 @main.command()
@@ -67,9 +69,10 @@ def gpx_to_csv(**kwargs: Any) -> None:
         exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path
     ),
 )
-def speed(**kwargs: Any) -> None:
+def speed(track: Path, img: Path) -> None:
     """CVS dataframe to Speed plot."""
-    plot_speed(**kwargs)
+    fig = plot_speed(track=track)
+    fig.savefig(img)
 
 
 @main.command()
@@ -85,9 +88,10 @@ def speed(**kwargs: Any) -> None:
         exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path
     ),
 )
-def speed_moving(**kwargs: Any) -> None:
+def speed_moving(track: Path, img: Path) -> None:
     """CVS dataframe to Speed plot."""
-    plot_speed_moving_avg(**kwargs)
+    fig = plot_speed_moving_avg(track=track)
+    fig.savefig(img)
 
 
 @main.command()
@@ -109,9 +113,10 @@ def speed_moving(**kwargs: Any) -> None:
         exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path
     ),
 )
-def heatmap(**kwargs: Any) -> None:
+def heatmap(track: Path, config: Path, img: Path) -> None:
     """CSV dataframe to heatmap."""
-    do_heatmap(**kwargs)
+    fig = do_heatmap(track=track, config=config)
+    fig.savefig(img)
 
 
 @main.command()

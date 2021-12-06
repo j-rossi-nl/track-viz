@@ -92,22 +92,19 @@ def _from_track_to_plot(track: Path, mvt_field: str) -> mpl.figure.Figure:
     return plot_movement_field(movements=movements, mvt_field=mvt_field)
 
 
-def plot_speed(track: Path, img: Path) -> None:
+def plot_speed(track: Path) -> mpl.figure.Figure:
     """Create the speed plot."""
-    fig = _from_track_to_plot(track=track, mvt_field="speed_kmh")
-    fig.savefig(img)
+    return _from_track_to_plot(track=track, mvt_field="speed_kmh")
 
 
-def plot_speed_moving_avg(track: Path, img: Path) -> None:
+def plot_speed_moving_avg(track: Path) -> mpl.figure.Figure:
     """Create the speed plot."""
-    fig = _from_track_to_plot(track=track, mvt_field="speed_moving_avg_1min")
-    fig.savefig(img)
+    return _from_track_to_plot(track=track, mvt_field="speed_moving_avg_1min")
 
 
-def plot_acceleration(track: Path, img: Path) -> None:
+def plot_acceleration(track: Path) -> mpl.figure.Figure:
     """Create the speed plot."""
-    fig = _from_track_to_plot(track=track, mvt_field="acceleration_ms2")
-    fig.savefig(img)
+    return _from_track_to_plot(track=track, mvt_field="acceleration_ms2")
 
 
 def web_plot_speed_elevation(track: pd.DataFrame) -> mpl.figure.Figure:

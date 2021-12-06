@@ -23,7 +23,7 @@ def _data_to_dataframe(data: List[Dict[str, Any]]) -> pd.DataFrame:
     return df
 
 
-def tcx_to_dataframe(tcx: Path, to: Optional[Path]) -> pd.DataFrame:
+def tcx_to_dataframe(tcx: Path) -> pd.DataFrame:
     """Process a TCX file."""
     tree = parse(str(tcx))
     ns = {"tcx": "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"}
@@ -43,12 +43,10 @@ def tcx_to_dataframe(tcx: Path, to: Optional[Path]) -> pd.DataFrame:
         data.append(sample)
 
     df = _data_to_dataframe(data)
-    if to is not None:
-        df.to_csv(to, index=False)
     return df
 
 
-def gpx_to_dataframe(gpx: Path, to: Optional[Path]) -> pd.DataFrame:
+def gpx_to_dataframe(gpx: Path) -> pd.DataFrame:
     """Process GPX file."""
     tree = parse(str(gpx))
     ns = {"gpx": "http://www.topografix.com/GPX/1/1"}
@@ -67,6 +65,4 @@ def gpx_to_dataframe(gpx: Path, to: Optional[Path]) -> pd.DataFrame:
         data.append(sample)
 
     df = _data_to_dataframe(data)
-    if to is not None:
-        df.to_csv(to, index=False)
     return df

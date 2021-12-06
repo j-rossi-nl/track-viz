@@ -1,6 +1,5 @@
 """Create a heatmap from the tracking information, superimposes on a background image."""
 from pathlib import Path
-from typing import Optional
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -9,9 +8,7 @@ import seaborn as sns
 import yaml
 
 
-def heatmap_from_dataframe(
-    track: pd.DataFrame, config: Path, img: Optional[Path]
-) -> mpl.figure.Figure:
+def heatmap_from_dataframe(track: pd.DataFrame, config: Path) -> mpl.figure.Figure:
     """Create heatmap."""
     with config.open("r") as src:
         conf = yaml.safe_load(src)
@@ -56,13 +53,10 @@ def heatmap_from_dataframe(
     ax.set_xticks([])
     ax.set_yticks([])
 
-    # Save
-    if img is not None:
-        fig.savefig(img)
     return fig
 
 
-def heatmap(track: Path, config: Path, img: Optional[Path]) -> mpl.figure.Figure:
+def heatmap(track: Path, config: Path) -> mpl.figure.Figure:
     """Create heatmap."""
     df = pd.read_csv(track, parse_dates=["time"])
-    return heatmap_from_dataframe(track=df, config=config, img=img)
+    return heatmap_from_dataframe(track=df, config=config)
