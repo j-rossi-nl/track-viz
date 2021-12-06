@@ -1,4 +1,5 @@
 """Football Track."""
+from .__main__ import main
 from .heatmap import heatmap
 from .heatmap import heatmap_from_dataframe
 from .input_file import gpx_to_dataframe
@@ -14,6 +15,7 @@ from .speed import web_plot_speed_elevation
 from .webserver import run_webserver
 
 __all__ = [
+    "main",
     "heatmap",
     "heatmap_from_dataframe",
     "gpx_to_dataframe",
