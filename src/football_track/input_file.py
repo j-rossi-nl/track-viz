@@ -5,8 +5,16 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 from defusedxml.ElementTree import parse
+
+
+def _float(x: Optional[str]) -> float:
+    if x is not None:
+        return float(x)
+    else:
+        return np.nan
 
 
 def _data_to_dataframe(data: List[Dict[str, Any]]) -> pd.DataFrame:
@@ -27,9 +35,9 @@ def tcx_to_dataframe(tcx: Path, to: Optional[Path]) -> pd.DataFrame:
     for point in trackpoints:
         sample = {
             "time": point.find(".//tcx:Time", ns).text,
-            "lat": float(point.find(".//tcx:LatitudeDegrees", ns).text),
-            "lon": float(point.find(".//tcx:LongitudeDegrees", ns).text),
-            "alt": float(point.find(".//tcx:AltitudeMeters", ns).text),
+            "lat": _float(point.find(".//tcx:LatitudeDegrees", ns).text),
+            "lon": _float(point.find(".//tcx:LongitudeDegrees", ns).text),
+            "alt": _float(point.find(".//tcx:AltitudeMeters", ns).text),
             "bpm": int(point.find(".//tcx:HeartRateBpm/tcx:Value", ns).text),
         }
         data.append(sample)
@@ -52,9 +60,9 @@ def gpx_to_dataframe(gpx: Path, to: Optional[Path]) -> pd.DataFrame:
     for point in trackpoints:
         sample = {
             "time": point.find(".//gpx:time", ns).text,
-            "lat": float(point.get("lat")),
-            "lon": float(point.get("lon")),
-            "alt": float(point.find(".//gpx:ele", ns).text),
+            "lat": _float(point.get("lat")),
+            "lon": _float(point.get("lon")),
+            "alt": _float(point.find(".//gpx:ele", ns).text),
         }
         data.append(sample)
 
