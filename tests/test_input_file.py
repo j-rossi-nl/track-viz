@@ -1,8 +1,8 @@
 """Test cases for the __main__ module."""
 from pathlib import Path
 
-from football_track import gpx_to_dataframe
-from football_track import tcx_to_dataframe
+from track_viz import gpx_to_dataframe
+from track_viz import tcx_to_dataframe
 
 
 def test_gpx() -> None:

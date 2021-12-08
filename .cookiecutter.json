@@ -3,10 +3,10 @@
   "author": "Julien Rossi",
   "development_status": "Development Status :: 3 - Alpha",
   "email": "mr.julien.rossi@gmail.com",
-  "friendly_name": "Football Track",
+  "friendly_name": "Visualize Tracking Data",
   "github_user": "JulienMBABD",
   "license": "MIT",
-  "package_name": "football_track",
-  "project_name": "football-track",
+  "package_name": "track_viz",
+  "project_name": "track-viz",
   "version": "0.0.0"
 }

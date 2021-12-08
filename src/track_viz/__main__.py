@@ -130,4 +130,4 @@ def flask(**kwargs: Any) -> None:
 
 
 if __name__ == "__main__":
-    main(prog_name="football-track")  # pragma: no cover
+    main(prog_name="track-viz")  # pragma: no cover

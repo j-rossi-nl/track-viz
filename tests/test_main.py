@@ -2,7 +2,7 @@
 import pytest
 from click.testing import CliRunner
 
-from football_track import main
+from track_viz import main
 
 
 @pytest.fixture
