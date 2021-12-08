@@ -1,4 +1,4 @@
-"""Football Track."""
+"""Visualize Tracking Data."""
 from .__main__ import main
 from .heatmap import heatmap
 from .heatmap import heatmap_from_dataframe

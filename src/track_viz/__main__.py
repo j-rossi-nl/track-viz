@@ -15,7 +15,7 @@ from .webserver import run_webserver
 @click.group()
 @click.version_option()
 def main() -> None:
-    """Football Track."""
+    """Visualize Tracking Data."""
 
 
 @main.command()
