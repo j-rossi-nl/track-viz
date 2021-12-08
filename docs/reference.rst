@@ -2,8 +2,8 @@ Reference
 =========
 
 
-football_track
+track_viz
 --------------
 
-.. automodule:: football_track
+.. automodule:: track_viz
    :members:

@@ -1,6 +1,6 @@
 Usage
 =====
 
-.. click:: football_track.__main__:main
-   :prog: football-track
+.. click:: track_viz.__main__:main
+   :prog: track-viz
    :nested: full

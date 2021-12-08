@@ -15,7 +15,7 @@ from .webserver import run_webserver
 @click.group()
 @click.version_option()
 def main() -> None:
-    """Football Track."""
+    """Visualize Tracking Data."""
 
 
 @main.command()
@@ -33,7 +33,9 @@ def main() -> None:
 )
 def tcx_to_csv(**kwargs: Any) -> None:
     """TCX file to CSV dataframe."""
-    tcx_to_dataframe(**kwargs)
+    to = kwargs.pop("to")
+    df = tcx_to_dataframe(**kwargs)
+    df.to_csv(to, index=False)
 
 
 @main.command()
@@ -51,7 +53,9 @@ def tcx_to_csv(**kwargs: Any) -> None:
 )
 def gpx_to_csv(**kwargs: Any) -> None:
     """GPX file to CSV dataframe."""
-    gpx_to_dataframe(**kwargs)
+    to = kwargs.pop("to")
+    df = gpx_to_dataframe(**kwargs)
+    df.to_csv(to, index=False)
 
 
 @main.command()
@@ -67,9 +71,10 @@ def gpx_to_csv(**kwargs: Any) -> None:
         exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path
     ),
 )
-def speed(**kwargs: Any) -> None:
+def speed(track: Path, img: Path) -> None:
     """CVS dataframe to Speed plot."""
-    plot_speed(**kwargs)
+    fig = plot_speed(track=track)
+    fig.savefig(img)
 
 
 @main.command()
@@ -85,9 +90,10 @@ def speed(**kwargs: Any) -> None:
         exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path
     ),
 )
-def speed_moving(**kwargs: Any) -> None:
+def speed_moving(track: Path, img: Path) -> None:
     """CVS dataframe to Speed plot."""
-    plot_speed_moving_avg(**kwargs)
+    fig = plot_speed_moving_avg(track=track)
+    fig.savefig(img)
 
 
 @main.command()
@@ -109,9 +115,10 @@ def speed_moving(**kwargs: Any) -> None:
         exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path
     ),
 )
-def heatmap(**kwargs: Any) -> None:
+def heatmap(track: Path, config: Path, img: Path) -> None:
     """CSV dataframe to heatmap."""
-    do_heatmap(**kwargs)
+    fig = do_heatmap(track=track, config=config)
+    fig.savefig(img)
 
 
 @main.command()
@@ -123,4 +130,4 @@ def flask(**kwargs: Any) -> None:
 
 
 if __name__ == "__main__":
-    main(prog_name="football-track")  # pragma: no cover
+    main(prog_name="track-viz")  # pragma: no cover

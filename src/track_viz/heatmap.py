@@ -1,6 +1,5 @@
 """Create a heatmap from the tracking information, superimposes on a background image."""
 from pathlib import Path
-from typing import Optional
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -8,10 +7,10 @@ import pandas as pd
 import seaborn as sns
 import yaml
 
+from .input_file import TrackingColumn
 
-def heatmap_from_dataframe(
-    track: pd.DataFrame, config: Path, img: Optional[Path]
-) -> mpl.figure.Figure:
+
+def heatmap_from_dataframe(track: pd.DataFrame, config: Path) -> mpl.figure.Figure:
     """Create heatmap."""
     with config.open("r") as src:
         conf = yaml.safe_load(src)
@@ -27,10 +26,10 @@ def heatmap_from_dataframe(
         conf["heatmap"]["background"]["max_lat"],
     )
 
-    track["lon_x"] = track["lon"].apply(
+    track["lon_x"] = track[TrackingColumn.LONGITUDE].apply(
         lambda x: img_data.shape[0] * (x - min_lon) / (max_lon - min_lon)
     )
-    track["lat_y"] = track["lat"].apply(
+    track["lat_y"] = track[TrackingColumn.LATITUDE].apply(
         lambda y: img_data.shape[1] * (y - min_lat) / (max_lat - min_lat)
     )
 
@@ -56,13 +55,10 @@ def heatmap_from_dataframe(
     ax.set_xticks([])
     ax.set_yticks([])
 
-    # Save
-    if img is not None:
-        fig.savefig(img)
     return fig
 
 
-def heatmap(track: Path, config: Path, img: Optional[Path]) -> mpl.figure.Figure:
+def heatmap(track: Path, config: Path) -> mpl.figure.Figure:
     """Create heatmap."""
     df = pd.read_csv(track, parse_dates=["time"])
-    return heatmap_from_dataframe(track=df, config=config, img=img)
+    return heatmap_from_dataframe(track=df, config=config)

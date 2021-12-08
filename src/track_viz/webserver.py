@@ -48,17 +48,15 @@ def create_heatmap() -> ft.ResponseReturnValue:
 
         suffix = fpath.suffix
         if suffix == ".tcx":
-            track = tcx_to_dataframe(tcx=fpath, to=None)
+            track = tcx_to_dataframe(tcx=fpath)
         elif suffix == ".gpx":
-            track = gpx_to_dataframe(gpx=fpath, to=None)
+            track = gpx_to_dataframe(gpx=fpath)
         else:
             raise ValueError(
                 f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"
             )
 
-        fig = heatmap_from_dataframe(
-            track=track, config=Path("static/heatmap.yml"), img=None
-        )
+        fig = heatmap_from_dataframe(track=track, config=Path("static/heatmap.yml"))
         img_bytes = BytesIO()
         fig.savefig(img_bytes, format="jpg")
         img_b64bytes = b64encode(img_bytes.getvalue()).decode("utf-8")
@@ -87,9 +85,9 @@ def create_speed_plots() -> ft.ResponseReturnValue:
 
         suffix = fpath.suffix
         if suffix == ".tcx":
-            track = tcx_to_dataframe(tcx=fpath, to=None)
+            track = tcx_to_dataframe(tcx=fpath)
         elif suffix == ".gpx":
-            track = gpx_to_dataframe(gpx=fpath, to=None)
+            track = gpx_to_dataframe(gpx=fpath)
         else:
             raise ValueError(
                 f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"

@@ -2,7 +2,7 @@
 from datetime import datetime
 
 
-project = "Football Track"
+project = "Visualize Tracking Data"
 author = "Julien Rossi"
 copyright = f"{datetime.now().year}, {author}"
 extensions = [

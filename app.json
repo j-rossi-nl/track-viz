@@ -2,8 +2,8 @@
   "name": "Graphs from Activity Tracker",
   "description": "Build graphs and viz from activity tracker datafiles.",
   "keywords": ["fitness", "dataviz"],
-  "website": "https://github.com/JulienMBABD/football-track",
-  "repository": "https://github.com/JulienMBABD/football-track",
+  "website": "https://github.com/JulienMBABD/track-viz",
+  "repository": "https://github.com/JulienMBABD/track-viz",
   "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScs-3NFazRR3S9jZY0fKjzP54oH9WyPMIloQ&usqp=CAU",
   "formation": {
     "web": {
