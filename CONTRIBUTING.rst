@@ -24,6 +24,7 @@ Either from command-line:
 .. code:: console
 
     $ git clone https://github.com/<your_username>/track-viz.git
+    $ cd track-viz
     $ git remote add upstream https://github.com/JulienMBABD/track-viz.git
 
 or from the IDE you are using (Pycharm, VSCode, ...).
@@ -35,7 +36,6 @@ Use the command line to install all needed packages for development:
 
 .. code:: console
 
-    $ cd track-viz
     $ poetry install
 
 This will create a new virtual Python environment that will include:
@@ -136,7 +136,6 @@ This happens within the new branch ``issue-xxx``:
 
 .. code:: console
 
-    $ cd track-viz
     $ git add .
     $ git commit
 
