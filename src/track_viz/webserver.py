@@ -56,7 +56,7 @@ def create_heatmap() -> ft.ResponseReturnValue:
                 f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"
             )
 
-        fig = heatmap_from_dataframe(track=track, config=Path("static/heatmap.yml"))
+        fig = heatmap_from_dataframe(track=track)
         img_bytes = BytesIO()
         fig.savefig(img_bytes, format="jpg")
         img_b64bytes = b64encode(img_bytes.getvalue()).decode("utf-8")
