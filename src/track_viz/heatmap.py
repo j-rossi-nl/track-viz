@@ -221,7 +221,7 @@ def heatmap_from_dataframe(track: pd.DataFrame) -> mpl.figure.Figure:
     return fig
 
 
-def heatmap(track: Path, config: Path) -> mpl.figure.Figure:
+def heatmap(track: Path) -> mpl.figure.Figure:
     """Create heatmap."""
     df = pd.read_csv(track, parse_dates=["time"])
     return heatmap_from_dataframe(track=df)

@@ -104,24 +104,18 @@ def speed_moving(track: Path, img: Path) -> None:
     ),
 )
 @click.option(
-    "--config",
-    type=click.Path(
-        exists=True, file_okay=True, dir_okay=False, readable=True, path_type=Path
-    ),
-)
-@click.option(
     "--img",
     type=click.Path(
         exists=False, file_okay=True, dir_okay=False, writable=True, path_type=Path
     ),
 )
-def heatmap(track: Path, config: Path, img: Path) -> None:
+def heatmap(track: Path, img: Path) -> None:
     """CSV dataframe to heatmap.
 
     Uses mapbox (https://mapbox.com). Create an account and get a TOKEN.
     Needs the environment variable MAPBOX_TOKEN to contain a valid Mapbox TOKEN.
     """
-    fig = do_heatmap(track=track, config=config)
+    fig = do_heatmap(track=track)
     fig.savefig(img)
 
 
