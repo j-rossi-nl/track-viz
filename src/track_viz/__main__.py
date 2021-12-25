@@ -116,7 +116,11 @@ def speed_moving(track: Path, img: Path) -> None:
     ),
 )
 def heatmap(track: Path, config: Path, img: Path) -> None:
-    """CSV dataframe to heatmap."""
+    """CSV dataframe to heatmap.
+
+    Uses mapbox (https://mapbox.com). Create an account and get a TOKEN.
+    Needs the environment variable MAPBOX_TOKEN to contain a valid Mapbox TOKEN.
+    """
     fig = do_heatmap(track=track, config=config)
     fig.savefig(img)
 
