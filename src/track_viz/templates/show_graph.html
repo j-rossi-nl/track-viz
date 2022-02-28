@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm//vega@5"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm//vega-embed@6"
+    ></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
@@ -22,7 +34,25 @@
     <title>{{ page_title }}</title>
   </head>
   <body>
-    <div class="full_screen">{{ img_speed_terrain }}</div>
-    <div class="full_screen">{{ img_speed_terrain_kde }}</div>
+    <div class="full_screen" id="vis"></div>
+    <script type="text/javascript">
+      vega.expressionFunction('paceformat', function(datum, params) {
+        var minutes = Math.trunc(datum)
+        var secondes = Math.trunc((datum - minutes) * 60)
+        return minutes.toString() + ":" + secondes.toString().padStart(2, '0');
+      });
+
+      function parse(url, div) {
+      var opt = {
+        actions: { export: true, source: false, editor: false }
+      };
+      vegaEmbed("#" + div, url, opt)
+        .then(result => console.log(result))
+        .catch(console.warn);
+      }
+
+      //Parse your Json variable here
+      parse({{ context.vega_data_json | safe }}, "vis")
+    </script>
   </body>
 </html>
