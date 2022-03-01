@@ -312,4 +312,5 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
         .configure_axisRight(titleColor="brown", labelColor="brown")
     )
 
-    return layers.to_json()
+    jsondumps: str = layers.to_json()
+    return jsondumps
