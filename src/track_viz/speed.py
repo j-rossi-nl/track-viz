@@ -307,7 +307,7 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
     layers = (
         alt.layer(speed + average_speed, elevation)
         .resolve_scale(y="independent")
-        .properties(width=1200)
+        .properties(width="container", height="container")
         .configure_axisLeft(titleColor="darkgreen", labelColor="darkgreen")
         .configure_axisRight(titleColor="brown", labelColor="brown")
     )
