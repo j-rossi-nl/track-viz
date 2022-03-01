@@ -1,14 +1,12 @@
 """Run a Flask web server to create heatmap and speed graph."""
 from base64 import b64encode
 from io import BytesIO
-from io import StringIO
 from pathlib import Path
 from secrets import token_hex
 from tempfile import gettempdir
 
 import flask.typing as ft
 from flask import Flask
-from flask import Markup  # type: ignore
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -17,8 +15,7 @@ from werkzeug.utils import secure_filename
 from .heatmap import heatmap_from_dataframe
 from .input_file import gpx_to_dataframe
 from .input_file import tcx_to_dataframe
-from .speed import web_plot_speed_climb_kde
-from .speed import web_plot_speed_elevation
+from .speed import altair_plot_pace
 
 
 app = Flask(__name__)
@@ -93,21 +90,13 @@ def create_speed_plots() -> ft.ResponseReturnValue:
                 f"Wrong suffix {suffix}, expected one of {app.config['ALLOWED_EXTENSIONS']}"
             )
 
-        fig = web_plot_speed_elevation(track=track)
-        speed_terrain_xml = StringIO()
-        fig.savefig(speed_terrain_xml, format="svg")
-
-        fig = web_plot_speed_climb_kde(track=track)
-        speed_terrain_kde_xml = StringIO()
-        fig.savefig(speed_terrain_kde_xml, format="svg")
-
+        specjson = altair_plot_pace(track=track)
         fpath.unlink()
 
         return render_template(
             "show_graph.html",
             page_title="Speed Graphs",
-            img_speed_terrain=Markup(speed_terrain_xml.getvalue()),
-            img_speed_terrain_kde=Markup(speed_terrain_kde_xml.getvalue()),
+            context={"vega_data_json": specjson},
         )
     else:
         return render_template("upload_speed.html")

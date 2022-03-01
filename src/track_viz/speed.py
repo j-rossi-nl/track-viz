@@ -1,6 +1,7 @@
 """Create a speed graph from a tracking dataframe."""
 from pathlib import Path
 
+import altair as alt
 import matplotlib as mpl
 import matplotlib.dates as mdates
 import matplotlib.figure
@@ -78,7 +79,9 @@ def track_2_movements(df: pd.DataFrame) -> pd.DataFrame:
         movements["ground_distance_m"] ** 2 + movements["delta_alt_m"] ** 2
     ) ** 0.5
 
-    movements["speed_ms"] = movements["distance_m"] / movements["delta_time"].dt.seconds
+    movements["speed_ms"] = (
+        movements["distance_m"] / movements["delta_time"].dt.total_seconds()
+    )
     movements["speed_kmh"] = movements["speed_ms"] * 3.6
     movements["speed_moving_avg_1min"] = movements["speed_kmh"].rolling("60s").mean()
 
@@ -87,7 +90,7 @@ def track_2_movements(df: pd.DataFrame) -> pd.DataFrame:
     movements = movements.dropna()
 
     movements["acceleration_ms2"] = (
-        movements["delta_speed_ms"] / movements["delta_time"].dt.seconds
+        movements["delta_speed_ms"] / movements["delta_time"].dt.total_seconds()
     )
 
     # Identify missing points in the data
@@ -100,6 +103,12 @@ def track_2_movements(df: pd.DataFrame) -> pd.DataFrame:
         movements[measure] = movements[["use_point", measure]].apply(
             lambda x: x[measure] if x["use_point"] else np.nan, axis=1
         )
+
+    movements["run_distance_km"] = movements["distance_m"].cumsum() / 1000.0
+    movements["speed_minpkm"] = 60.0 / movements["speed_kmh"]
+    movements["elapsed_minutes"] = (
+        movements["time"] - movements["time"].min()
+    ).dt.total_seconds() / 60.0
 
     return movements
 
@@ -205,3 +214,134 @@ def web_plot_speed_climb_kde(track: pd.DataFrame) -> mpl.figure.Figure:
     ax.set_yticks([])
     ax.get_legend().set_title("TERRAIN")
     return fig
+
+
+def altair_plot_pace(track: pd.DataFrame) -> str:
+    """Prepare an altair viz for instantaneous speed and elevation.
+
+    Returns a Vega-Lite JSON spec file.
+    """
+    movs = track_2_movements(track)
+    source = movs[["run_distance_km", "speed_minpkm", "alt", "elapsed_minutes"]]
+    brush = alt.selection(type="interval", encodings=["x"], name="selector")
+
+    pace = (
+        alt.Chart(source)
+        .mark_area(
+            line={"color": "darkgreen"},
+            color=alt.Gradient(
+                gradient="linear",
+                stops=[
+                    alt.GradientStop(color="white", offset=0),
+                    alt.GradientStop(color="darkgreen", offset=1),
+                ],
+                x1=1,
+                x2=1,
+                y1=1,
+                y2=0,
+            ),
+        )
+        .transform_loess(loess="speed_minpkm", on="run_distance_km", bandwidth=0.02)
+        .transform_calculate(
+            pace="datum.speed_minpkm",
+            pace_txt="format(floor(datum.pace), 'd') + ':' + format(floor((datum.pace - floor(datum.pace)) * 60), '02d')",
+        )
+        .encode(
+            x=alt.X("run_distance_km:Q", title="Distance (km)"),
+            y=alt.Y("speed_minpkm:Q", title="Pace (min/km)"),
+            tooltip=[
+                alt.Tooltip("run_distance_km", title="Distance (km)", format=".1f"),
+                alt.Tooltip("pace_txt:N", title="Pace (min/km)"),
+            ],
+        )
+        .add_selection(brush)
+    )
+
+    average_pace = (
+        alt.Chart(source)
+        .transform_filter(brush)
+        .mark_rule(color="#636363", strokeDash=[10, 10])
+        .transform_aggregate(
+            maxd="max(run_distance_km)",
+            mind="min(run_distance_km)",
+            maxt="max(elapsed_minutes)",
+            mint="min(elapsed_minutes)",
+        )
+        .transform_calculate(
+            pace=(alt.datum.maxt - alt.datum.mint) / (alt.datum.maxd - alt.datum.mind),
+            pace_txt="format(floor(datum.pace), 'd') + ':' + format(floor((datum.pace - floor(datum.pace)) * 60), '02d')",
+        )
+        .encode(
+            y="pace:Q",
+            size=alt.SizeValue(3),
+            tooltip=[
+                alt.Tooltip("pace_txt:N", title="Average Pace in Selection (min/km)")
+            ],
+        )
+    )
+
+    average_pace_text = (
+        alt.Chart(source)
+        .mark_text(
+            align="center",
+            baseline="bottom",
+            fontSize=12,
+            dx=5,
+            dy=-5,
+            fontWeight="bold",
+            color="darkgreen",
+        )
+        .transform_filter(brush)
+        .transform_aggregate(
+            maxd="max(run_distance_km)",
+            mind="min(run_distance_km)",
+            maxt="max(elapsed_minutes)",
+            mint="min(elapsed_minutes)",
+        )
+        .transform_calculate(
+            pace=(alt.datum.maxt - alt.datum.mint) / (alt.datum.maxd - alt.datum.mind),
+            delta_d=alt.datum.maxd - alt.datum.mind,
+            midx=(alt.datum.maxd + alt.datum.mind) / 2,
+            pace_txt="'Distance (m): ' + format(floor(datum.delta_d * 1000), 'd') + "
+            "' / Pace (min/km): ' + format(floor(datum.pace), 'd') + ':'"
+            " + format(floor((datum.pace - floor(datum.pace)) * 60), '02d')",
+        )
+        .encode(
+            text="pace_txt:N",
+            x="midx:Q",
+            y=alt.value(5),
+            opacity=alt.condition(brush, alt.OpacityValue(0), alt.OpacityValue(1)),
+        )
+    )
+
+    # Draw the elevation profile
+    elevation = (
+        alt.Chart(source)
+        .mark_area(line={"color": "brown"}, color="#d8b5a5")
+        .encode(
+            x="run_distance_km:Q",
+            y=alt.Y(
+                "alt:Q",
+                scale=alt.Scale(
+                    domain=[
+                        source["alt"].min(),
+                        source["alt"].max()
+                        + 2 * (source["alt"].max() - source["alt"].min()),
+                    ]
+                ),
+            ),
+        )
+        .transform_loess(loess="alt", on="run_distance_km", bandwidth=0.02)
+    )
+
+    # Put the five layers into a chart and bind the data
+    layers = (
+        alt.layer(pace + average_pace + average_pace_text, elevation)
+        .resolve_scale(y="independent")
+        .properties(width="container", height="container")
+        .configure_axisLeft(titleColor="darkgreen", labelColor="darkgreen")
+        .configure_axisRight(titleColor="brown", labelColor="brown")
+    )
+
+    jsondumps: str = layers.to_json()
+    return jsondumps

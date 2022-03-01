@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm//vega@5"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm//vega-embed@6"
+    ></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
@@ -20,9 +32,29 @@
       href="{{ url_for('static', filename='track_viz_favicon.png.png') }}"
     />
     <title>{{ page_title }}</title>
+    <style>
+      .myDiv {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
-    <div class="full_screen">{{ img_speed_terrain }}</div>
-    <div class="full_screen">{{ img_speed_terrain_kde }}</div>
+    <div class="myDiv" id="vis">
+      <script type="text/javascript">
+        function parse(url, div) {
+          var opt = {
+            actions: { export: true, source: false, editor: false }
+          };
+          vegaEmbed("#" + div, url, opt)
+            .then(result => console.log(result))
+            .catch(console.warn);
+        }
+
+        //Parse your Json variable here
+        parse({{ context.vega_data_json | safe }}, "vis")
+      </script>
+    </div>
   </body>
 </html>
