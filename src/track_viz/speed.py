@@ -223,8 +223,9 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
     """
     movs = track_2_movements(track)
     source = movs[["run_distance_km", "speed_minpkm", "alt", "elapsed_minutes"]]
+    brush = alt.selection(type="interval", encodings=["x"], name="selector")
 
-    speed = (
+    pace = (
         alt.Chart(source)
         .mark_area(
             line={"color": "darkgreen"},
@@ -241,23 +242,24 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
             ),
         )
         .transform_loess(loess="speed_minpkm", on="run_distance_km", bandwidth=0.02)
+        .transform_calculate(
+            pace="datum.speed_minpkm",
+            pace_txt="format(floor(datum.pace), 'd') + ':' + format(floor((datum.pace - floor(datum.pace)) * 60), '02d')",
+        )
         .encode(
             x=alt.X("run_distance_km:Q", title="Distance (km)"),
             y=alt.Y("speed_minpkm:Q", title="Pace (min/km)"),
             tooltip=[
                 alt.Tooltip("run_distance_km", title="Distance (km)", format=".1f"),
-                alt.Tooltip(
-                    "speed_minpkm",
-                    title="Pace (min/km)",
-                    format="",
-                    formatType="paceformat",
-                ),
+                alt.Tooltip("pace_txt:N", title="Pace (min/km)"),
             ],
         )
+        .add_selection(brush)
     )
 
-    average_speed = (
+    average_pace = (
         alt.Chart(source)
+        .transform_filter(brush)
         .mark_rule(color="#636363", strokeDash=[10, 10])
         .transform_aggregate(
             maxd="max(run_distance_km)",
@@ -266,19 +268,49 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
             mint="min(elapsed_minutes)",
         )
         .transform_calculate(
-            pace=(alt.datum.maxt - alt.datum.mint) / (alt.datum.maxd - alt.datum.mind)
+            pace=(alt.datum.maxt - alt.datum.mint) / (alt.datum.maxd - alt.datum.mind),
+            pace_txt="format(floor(datum.pace), 'd') + ':' + format(floor((datum.pace - floor(datum.pace)) * 60), '02d')",
         )
         .encode(
             y="pace:Q",
             size=alt.SizeValue(3),
             tooltip=[
-                alt.Tooltip(
-                    "pace:Q",
-                    title="Average Pace (min/km)",
-                    format="",
-                    formatType="paceformat",
-                )
+                alt.Tooltip("pace_txt:N", title="Average Pace in Selection (min/km)")
             ],
+        )
+    )
+
+    average_pace_text = (
+        alt.Chart(source)
+        .mark_text(
+            align="center",
+            baseline="bottom",
+            fontSize=12,
+            dx=5,
+            dy=-5,
+            fontWeight="bold",
+            color="darkgreen",
+        )
+        .transform_filter(brush)
+        .transform_aggregate(
+            maxd="max(run_distance_km)",
+            mind="min(run_distance_km)",
+            maxt="max(elapsed_minutes)",
+            mint="min(elapsed_minutes)",
+        )
+        .transform_calculate(
+            pace=(alt.datum.maxt - alt.datum.mint) / (alt.datum.maxd - alt.datum.mind),
+            delta_d=alt.datum.maxd - alt.datum.mind,
+            midx=(alt.datum.maxd + alt.datum.mind) / 2,
+            pace_txt="'Distance (m): ' + format(floor(datum.delta_d * 1000), 'd') + "
+            "' / Pace (min/km): ' + format(floor(datum.pace), 'd') + ':'"
+            " + format(floor((datum.pace - floor(datum.pace)) * 60), '02d')",
+        )
+        .encode(
+            text="pace_txt:N",
+            x="midx:Q",
+            y=alt.value(5),
+            opacity=alt.condition(brush, alt.OpacityValue(0), alt.OpacityValue(1)),
         )
     )
 
@@ -297,7 +329,6 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
                         + 2 * (source["alt"].max() - source["alt"].min()),
                     ]
                 ),
-                title="Altitude (m)",
             ),
         )
         .transform_loess(loess="alt", on="run_distance_km", bandwidth=0.02)
@@ -305,7 +336,7 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
 
     # Put the five layers into a chart and bind the data
     layers = (
-        alt.layer(speed + average_speed, elevation)
+        alt.layer(pace + average_pace + average_pace_text, elevation)
         .resolve_scale(y="independent")
         .properties(width="container", height="container")
         .configure_axisLeft(titleColor="darkgreen", labelColor="darkgreen")

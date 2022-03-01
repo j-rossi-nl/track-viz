@@ -43,12 +43,6 @@
   <body>
     <div class="myDiv" id="vis">
       <script type="text/javascript">
-        vega.expressionFunction('paceformat', function(datum, params) {
-          var minutes = Math.trunc(datum)
-          var secondes = Math.trunc((datum - minutes) * 60)
-          return minutes.toString() + ":" + secondes.toString().padStart(2, '0');
-        });
-
         function parse(url, div) {
           var opt = {
             actions: { export: true, source: false, editor: false }
