@@ -31,7 +31,7 @@ poetry = "^1.1.12"
 altair = "^4.2.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
+pytest = "^7.0.1"
 coverage = {extras = ["toml"], version = "^6.2"}
 safety = "^1.10.3"
 mypy = "^0.930"
