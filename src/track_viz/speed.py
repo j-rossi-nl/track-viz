@@ -310,7 +310,6 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
             text="pace_txt:N",
             x="midx:Q",
             y=alt.value(5),
-            opacity=alt.condition(brush, alt.OpacityValue(0), alt.OpacityValue(1)),
         )
     )
 
