@@ -7,7 +7,7 @@
     ></script>
     <script
       type="text/javascript"
-      src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0"
+      src="https://cdn.jsdelivr.net/npm//vega-lite@5"
     ></script>
     <script
       type="text/javascript"
@@ -45,7 +45,8 @@
       <script type="text/javascript">
         function parse(url, div) {
           var opt = {
-            actions: { export: true, source: false, editor: false }
+            actions: { export: true, source: false, editor: false, compiled: false },
+            renderer: "svg"
           };
           vegaEmbed("#" + div, url, opt)
             .then(result => console.log(result))
