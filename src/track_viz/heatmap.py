@@ -61,10 +61,10 @@ ZOOM0_SIZE = 512
 # Geo-coordinate in degrees => Pixel coordinate
 def _g2p(dcoords: DegreesCoordinates, zoom: int) -> PixelCoordinates:
     return PixelCoordinates(
-        x=ZOOM0_SIZE * (2 ** zoom) * (1 + dcoords.lon / 180) / 2,
+        x=ZOOM0_SIZE * (2**zoom) * (1 + dcoords.lon / 180) / 2,
         y=ZOOM0_SIZE
         / (2 * pi)
-        * (2 ** zoom)
+        * (2**zoom)
         * (pi - log(tan(pi / 4 * (1 + dcoords.lat / 90)))),
     )
 
@@ -73,10 +73,10 @@ def _g2p(dcoords: DegreesCoordinates, zoom: int) -> PixelCoordinates:
 def _p2g(pcoords: PixelCoordinates, zoom: int) -> DegreesCoordinates:
     return DegreesCoordinates(
         lat=(
-            atan(exp(pi - pcoords.y / ZOOM0_SIZE * (2 * pi) / (2 ** zoom))) / pi * 4 - 1
+            atan(exp(pi - pcoords.y / ZOOM0_SIZE * (2 * pi) / (2**zoom))) / pi * 4 - 1
         )
         * 90,
-        lon=(pcoords.x / ZOOM0_SIZE * 2 / (2 ** zoom) - 1) * 180,
+        lon=(pcoords.x / ZOOM0_SIZE * 2 / (2**zoom) - 1) * 180,
     )
 
 
