@@ -1,4 +1,5 @@
 """Create a heatmap from the tracking information, superimposes on a background image."""
+import datetime as dt
 import os
 from dataclasses import dataclass
 from io import BytesIO
@@ -23,6 +24,7 @@ import pandas as pd
 import seaborn as sns
 
 from .input_file import TrackingColumn
+from .speed import track_2_movements
 
 
 @dataclass
@@ -177,7 +179,7 @@ def heatmap_from_dataframe(track: pd.DataFrame) -> mpl.figure.Figure:
     # Get data from mapbox
     url_template = "https://api.mapbox.com/styles/v1/mapbox/{style}/static/{lon},{lat},{zoom}/{w}x{h}{retina}?access_token={token}&attribution=false&logo=false"  # noqa
     mapbox_url = url_template.format(**params)
-
+    print(mapbox_url)
     with urlopen(mapbox_url) as api_call:  # noqa
         data = api_call.read()
 
@@ -195,6 +197,13 @@ def heatmap_from_dataframe(track: pd.DataFrame) -> mpl.figure.Figure:
     track["lat_y"] = track[TrackingColumn.LATITUDE].apply(
         lambda y: img_data.shape[1] * (y - bottom) / (top - bottom)
     )
+
+    movs = track_2_movements(track)
+    total_distance: float = movs["distance_m"].sum() / 1000.0
+    start: dt.datetime = track[TrackingColumn.TIME].min()
+    duration: float = (
+        track[TrackingColumn.TIME].max() - track[TrackingColumn.TIME].min()
+    ).total_seconds()
 
     fig, ax = plt.subplots(figsize=(10, 10))
 
@@ -217,6 +226,30 @@ def heatmap_from_dataframe(track: pd.DataFrame) -> mpl.figure.Figure:
     ax.set_xlabel("")
     ax.set_xticks([])
     ax.set_yticks([])
+
+    ax.text(
+        s=f"Distance {total_distance:.1f} km\nDuration {duration // 60:02.0f}:{duration % 60:02.0f}",
+        x=0.02,
+        y=0.98,
+        transform=ax.transAxes,
+        verticalalignment="top",
+        horizontalalignment="left",
+        color="white",
+        weight="heavy",
+        bbox={"facecolor": "forestgreen", "alpha": 0.5, "boxstyle": "round"},
+    )
+
+    ax.text(
+        s=start.strftime("%d-%m-%Y %H:%M"),
+        x=0.98,
+        y=0.98,
+        transform=ax.transAxes,
+        verticalalignment="top",
+        horizontalalignment="right",
+        color="white",
+        weight="heavy",
+        bbox={"facecolor": "slateblue", "alpha": 0.5, "boxstyle": "round"},
+    )
 
     return fig
 
