@@ -16,6 +16,7 @@ from .heatmap import heatmap_from_dataframe
 from .input_file import gpx_to_dataframe
 from .input_file import tcx_to_dataframe
 from .speed import altair_plot_pace
+from .speed import plotly_plot_trace
 
 
 app = Flask(__name__)
@@ -93,10 +94,12 @@ def create_speed_plots() -> ft.ResponseReturnValue:
         specjson = altair_plot_pace(track=track)
         fpath.unlink()
 
+        mapjson = plotly_plot_trace(track=track)
+
         return render_template(
             "show_graph.html",
             page_title="Speed Graphs",
-            context={"vega_data_json": specjson},
+            context={"vega_data_json": specjson, "plot_run_trace": mapjson},
         )
     else:
         return render_template("upload_speed.html")

@@ -1,15 +1,19 @@
 """Create a speed graph from a tracking dataframe."""
+import json
+import os
 from pathlib import Path
 
 import altair as alt
 import matplotlib as mpl
 import matplotlib.dates as mdates
-import matplotlib.figure
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 import seaborn as sns
 from geopy import distance
+from plotly.utils import PlotlyJSONEncoder
 
 from .input_file import TrackingColumn
 
@@ -24,6 +28,8 @@ sns.set_theme(
     },
 )
 plt.rcParams["figure.figsize"] = (20, 10)
+
+px.set_mapbox_access_token(os.getenv("MAPBOX_TOKEN"))
 
 
 def track_2_movements(df: pd.DataFrame) -> pd.DataFrame:
@@ -57,9 +63,12 @@ def track_2_movements(df: pd.DataFrame) -> pd.DataFrame:
 
     # only pd.timestamp  has strftime, this is a dirty trick
     # noinspection PyTypeChecker
+    run_date = movements["time"].min()
     movements["elapsed_time"] = (
-        pd.Timestamp("2021-01-01 00:00") + movements["delta_time"].cumsum()
+        pd.Timestamp(year=run_date.year, month=run_date.month, day=run_date.day)
+        + movements["delta_time"].cumsum()
     )
+
     movements = movements.set_index("elapsed_time")
 
     # geopy gives only geodesic distance
@@ -344,3 +353,66 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
 
     jsondumps: str = layers.to_json()
     return jsondumps
+
+
+def plotly_plot_trace(track: pd.DataFrame) -> str:
+    """Prepare a plot of the run with a map background.
+
+    Returns a Plotly JSON.
+    """
+    movs = track_2_movements(track)
+    movs = movs.reset_index()
+    movs["run_full_km"] = movs["run_distance_km"].astype(int)
+    movs["diff_full_km"] = movs["run_full_km"].diff().fillna(1)
+    movs["run_full_km_text"] = movs["run_full_km"].astype(str)
+    kms = movs[movs["diff_full_km"] == 1]
+
+    mapbox_style = "carto-positron"
+    center = {
+        "lon": (track["lon"].max() + track["lon"].min()) / 2.0,
+        "lat": (track["lat"].max() + track["lat"].min()) / 2.0,
+    }
+    zoom = 14
+
+    run_trace: go.Figure = px.line_mapbox(
+        data_frame=movs,
+        lat="lat",
+        lon="lon",
+        hover_data={
+            "lat": False,
+            "lon": False,
+            "elapsed_time": "|%M:%S",
+            "run_distance_km": ":.2f",
+        },
+        labels={"elapsed_time": "Time", "run_distance_km": "Km"},
+        mapbox_style=mapbox_style,
+        zoom=zoom,
+        center=center,
+    ).update_traces(line=dict(color="cornflowerblue", width=4))
+
+    km_points = px.scatter_mapbox(
+        data_frame=kms,
+        lat="lat",
+        lon="lon",
+        text="run_full_km_text",
+        hover_data={
+            "lat": False,
+            "lon": False,
+            "run_full_km_text": False,
+            "elapsed_time": "|%M:%S",
+            "run_full_km": ":02d",
+        },
+        labels={"elapsed_time": "Time", "run_full_km": "Km"},
+    ).update_traces(
+        textfont=dict(color="black"),
+        marker=dict(allowoverlap=True, color="darkorange", symbol="circle", size=20),
+    )
+
+    run_trace.add_traces(km_points.data)
+
+    run_trace.update_layout(
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    )
+
+    plot_json = json.dumps(run_trace, cls=PlotlyJSONEncoder)
+    return plot_json

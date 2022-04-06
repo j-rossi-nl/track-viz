@@ -23,6 +23,8 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='upload.css') }}"
     />
+    <!-- Import Plotly (does not have to be from CDN) -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link
       rel="shortcut icon"
       href="{{ url_for('static', filename='track_viz_favicon.png.png') }}"
@@ -41,7 +43,7 @@
     </style>
   </head>
   <body>
-    <div class="myDiv" id="vis">
+    <div class="myDiv" id="vis" style="width: 100%; height: 50%">
       <script type="text/javascript">
         function parse(url, div) {
           var opt = {
@@ -55,6 +57,14 @@
 
         //Parse your Json variable here
         parse({{ context.vega_data_json | safe }}, "vis")
+      </script>
+    </div>
+    <!-- Placeholder for map-->
+    <div class="chart" id="run-trace" style="width: 100%; height: 50%">
+      <script>
+        //Parse your Json variable here
+        var graphs = {{ context.plot_run_trace | safe }};
+        Plotly.plot('run-trace', graphs, {});
       </script>
     </div>
   </body>
