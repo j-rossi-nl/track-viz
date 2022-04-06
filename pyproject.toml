@@ -97,7 +97,8 @@ module = [
     "geopy.*",
     "yaml.*",
     "defusedxml.*",
-    "altair.*"
+    "altair.*",
+    "plotly.*"
 ]
 ignore_missing_imports = true
 
