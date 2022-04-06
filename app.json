@@ -22,7 +22,7 @@
   "env": {
     "PYTHON_RUNTIME_VERSION": {
       "description": "Python version to run the app.",
-      "value": "3.8.12"
+      "value": "3.8.13"
     }
   }
 }
