@@ -367,7 +367,7 @@ def plotly_plot_trace(track: pd.DataFrame) -> str:
     movs["run_full_km_text"] = movs["run_full_km"].astype(str)
     kms = movs[movs["diff_full_km"] == 1]
 
-    mapbox_style = "open-street-map"
+    mapbox_style = "carto-positron"
     center = {
         "lon": (track["lon"].max() + track["lon"].min()) / 2.0,
         "lat": (track["lat"].max() + track["lat"].min()) / 2.0,
