@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Last 20 runs</title>
+    <!-- Latest compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
+      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+      crossorigin="anonymous"
+    />
+
+    <!-- Optional theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap-theme.min.css"
+      integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ"
+      crossorigin="anonymous"
+    />
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"
+      integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+      crossorigin="anonymous"
+    ></script>
+
+    <script defer src="{{ url_for('static', filename='all.js') }}"></script>
+    <!--load all styles -->
+  </head>
+  <body>
+    <div class="row">
+      <div class="col-md-4 col-md-offset-4">
+        <table class="table table-striped">
+          <tr>
+            <th>Link</th>
+            <th>Date / Time</th>
+            <th>Duration</th>
+          </tr>
+          {% for item in context['runs'] %}
+          <tr>
+            <td>
+              <h2>
+                <a href="{{ item.href }}"
+                  ><i class="fas fa-running"></i>&nbsp;&nbsp;<i
+                    class="fas fa-chart-line"
+                  ></i
+                ></a>
+              </h2>
+            </td>
+            <td>{{ item.date }}</td>
+            <td>{{ item.duration }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

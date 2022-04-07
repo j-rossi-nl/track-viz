@@ -16,7 +16,7 @@
     />
     <link
       rel="apple-touch-icon"
-      href="{{ url_for('static', filename='track_viz_favicon.png.png') }}"
+      href="{{ url_for('static', filename='track_viz_favicon.png') }}"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Speed Graph</title>
@@ -33,6 +33,15 @@
         Speed Graph
       </p>
     </div>
+
+    <div class="wrapper">
+      <a href="/fitbitauthorize?page=speed"
+        ><img
+          src="{{ url_for('static', filename='Fitbit_logo_RGB.svg') }}"
+          width="400"
+      /></a>
+    </div>
+
     <div class="wrapper">
       <div class="file-upload">
         <form action="/speed" method="POST" enctype="multipart/form-data">
