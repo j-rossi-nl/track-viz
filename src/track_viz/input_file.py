@@ -39,8 +39,6 @@ def tcx_to_dataframe(tcx: Path) -> pd.DataFrame:
     ns = {"tcx": "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"}
 
     trackpoints = tree.findall(".//tcx:Trackpoint", ns)
-    n_trackpoints = len(trackpoints)
-    print(f"Tracking {n_trackpoints} trackpoints")
     data = []
     for point in trackpoints:
         sample = {
@@ -70,8 +68,6 @@ def gpx_to_dataframe(gpx: Path) -> pd.DataFrame:
     ns = {"gpx": "http://www.topografix.com/GPX/1/1"}
 
     trackpoints = tree.findall(".//gpx:trkpt", ns)
-    n_trackpoints = len(trackpoints)
-    print(f"Tracking {n_trackpoints} trackpoints")
     data = []
     for point in trackpoints:
         sample = {
