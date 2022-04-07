@@ -52,17 +52,21 @@ def _allowed_file(filename: str) -> bool:
 @app.route("/heatmap", methods=["GET", "POST"])
 def create_heatmap() -> ft.ResponseReturnValue:
     """Handles incoming activity file and create heatmap."""
-    if request.method == "POST":
-        f = request.files["file"]
+    if request.method == "POST" or "tcx_file" in session:
+        if "tcx_file" in session:
+            fpath = Path(session.pop("tcx_file"))
+            session.modified = True
+        else:
+            f = request.files["file"]
 
-        if f.filename is None or not _allowed_file(f.filename):
-            return redirect(request.url)
+            if f.filename is None or not _allowed_file(f.filename):
+                return redirect(request.url)
 
-        fpath = (
-            Path(app.config["UPLOAD_FOLDER"])
-            / f"{token_hex(8)}_{secure_filename(f.filename)}"
-        )
-        f.save(fpath)
+            fpath = (
+                Path(app.config["UPLOAD_FOLDER"])
+                / f"{token_hex(8)}_{secure_filename(f.filename)}"
+            )
+            f.save(fpath)
 
         suffix = fpath.suffix
         if suffix == ".tcx":
