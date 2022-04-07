@@ -99,7 +99,8 @@ module = [
     "yaml.*",
     "defusedxml.*",
     "altair.*",
-    "plotly.*"
+    "plotly.*",
+    "fitbit.*"
 ]
 ignore_missing_imports = true
 
