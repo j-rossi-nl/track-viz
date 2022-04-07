@@ -11,7 +11,6 @@ from math import log2
 from math import pi
 from math import tan
 from pathlib import Path
-from pprint import pprint
 from typing import Any
 from typing import Dict
 from typing import Protocol
@@ -152,8 +151,6 @@ def _get_map_by_bbox(bbox: BBox) -> Tuple[Dict[str, Any], BBox]:
                 "retina": "@2x",
             }
 
-            pprint(params)
-
             return params, BBox(
                 southwest=DegreesCoordinates(lat=southeast.lat, lon=northwest.lon),
                 northeast=DegreesCoordinates(lat=northwest.lat, lon=southeast.lon),
@@ -179,7 +176,6 @@ def heatmap_from_dataframe(track: pd.DataFrame) -> mpl.figure.Figure:
     # Get data from mapbox
     url_template = "https://api.mapbox.com/styles/v1/mapbox/{style}/static/{lon},{lat},{zoom}/{w}x{h}{retina}?access_token={token}&attribution=false&logo=false"  # noqa
     mapbox_url = url_template.format(**params)
-    print(mapbox_url)
     with urlopen(mapbox_url) as api_call:  # noqa
         data = api_call.read()
 
