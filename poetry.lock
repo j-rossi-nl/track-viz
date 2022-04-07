@@ -1865,6 +1865,22 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "py-fitbit"
+version = "1.0.1"
+description = "Python bindings for Fitbit Web API"
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+
+[package.dependencies]
+certifi = ">=14.05.14"
+click = ">=8.0.1"
+python-dateutil = ">=2.5.3"
+python-dotenv = ">=0.19.2,<0.20.0"
+six = ">=1.10"
+urllib3 = ">=1.15.1"
+
+[[package]]
 name = "pycodestyle"
 version = "2.8.0"
 description = "Python style guide checker"
@@ -2721,7 +2737,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "65d873cb64c19fcf261a01ac960d34e496aae5318e46ae4f6975ba32211fdabc"
+content-hash = "9965f8b85b2b4e6749bc94351e5710db15c38c5ba0d055650433b3f79738de36"
 
 [metadata.files]
 alabaster = [
@@ -3849,6 +3865,10 @@ pure-eval = [
 py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
+]
+py-fitbit = [
+    {file = "py-fitbit-1.0.1.tar.gz", hash = "sha256:8bf68d62f9a716c2f238283fc5953085dab195b99ab942abc1f07e63b30f400a"},
+    {file = "py_fitbit-1.0.1-py3-none-any.whl", hash = "sha256:440fce58036042f901c2336e4324ce4c7ec4aae984b14d6420c6c7dc7487280d"},
 ]
 pycodestyle = [
     {file = "pycodestyle-2.8.0-py2.py3-none-any.whl", hash = "sha256:720f8b39dde8b293825e7ff02c475f3077124006db4f440dcbc9a20b76548a20"},

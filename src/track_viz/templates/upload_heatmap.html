@@ -33,6 +33,15 @@
         Football Heatmap
       </p>
     </div>
+
+    <div class="wrapper">
+      <a href="/fitbitauthorize?page=heatmap"
+        ><img
+          src="{{ url_for('static', filename='Fitbit_logo_RGB.svg') }}"
+          width="400"
+      /></a>
+    </div>
+
     <div class="wrapper">
       <div class="file-upload">
         <form action="/heatmap" method="POST" enctype="multipart/form-data">
