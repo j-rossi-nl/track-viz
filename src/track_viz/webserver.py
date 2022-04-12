@@ -1,5 +1,5 @@
 """Run a Flask web server to create heatmap and speed graph."""
-import datetime
+import datetime as dt
 import json
 import os
 import string
@@ -198,7 +198,7 @@ def fitbit_listruns() -> ft.ResponseReturnValue:
 
     activity = ActivityApi(api_client=api_client)
     activity.get_activities_log_list(
-        before_date=datetime.datetime.now().strftime("%Y-%m-%d"),
+        before_date=(dt.datetime.now() + dt.timedelta(days=1)).strftime("%Y-%m-%d"),
         sort="desc",
         offset=0,
         limit=20,
@@ -212,7 +212,7 @@ def fitbit_listruns() -> ft.ResponseReturnValue:
     hrefs = [f'/fitbitloadrun?logid={r["logId"]}' for r in runs]
 
     dates = [
-        f"{datetime.datetime.fromisoformat(r['startTime']).strftime('%A %-d %B %Y, %H:%M')}"
+        f"{dt.datetime.fromisoformat(r['startTime']).strftime('%A %-d %B %Y, %H:%M')}"
         for r in runs
     ]
 
@@ -249,7 +249,7 @@ def fitbit_loadrun() -> ft.ResponseReturnValue:
 
     activity = ActivityApi(api_client=api_client)
     activity.get_activities_log_list(
-        before_date=datetime.datetime.now().strftime("%Y-%m-%d"),
+        before_date=dt.datetime.now().strftime("%Y-%m-%d"),
         sort="asc",
         offset=0,
         limit=20,
