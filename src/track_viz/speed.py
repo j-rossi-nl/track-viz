@@ -231,6 +231,9 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
     Returns a Vega-Lite JSON spec file.
     """
     movs = track_2_movements(track)
+    pct95 = movs["speed_minpkm"].describe(percentiles=[0.95])["95%"]
+    movs["speed_minpkm"] = movs["speed_minpkm"].clip(upper=pct95)
+
     source = movs[["run_distance_km", "speed_minpkm", "alt", "elapsed_minutes"]]
     brush = alt.selection(type="interval", encodings=["x"], name="selector")
 
@@ -257,7 +260,16 @@ def altair_plot_pace(track: pd.DataFrame) -> str:
         )
         .encode(
             x=alt.X("run_distance_km:Q", title="Distance (km)"),
-            y=alt.Y("speed_minpkm:Q", title="Pace (min/km)"),
+            y=alt.Y(
+                "speed_minpkm:Q",
+                title="Pace (min/km)",
+                scale=alt.Scale(
+                    domain=[
+                        0.0,
+                        source["speed_minpkm"].describe(percentiles=[0.95])["95%"],
+                    ]
+                ),
+            ),
             tooltip=[
                 alt.Tooltip("run_distance_km", title="Distance (km)", format=".1f"),
                 alt.Tooltip("pace_txt:N", title="Pace (min/km)"),
