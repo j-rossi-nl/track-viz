@@ -1177,7 +1177,7 @@ ui-tests = ["build"]
 
 [[package]]
 name = "jupyterlab-pygments"
-version = "0.2.1"
+version = "0.2.2"
 description = "Pygments theme using JupyterLab CSS variables"
 category = "dev"
 optional = false
@@ -3332,8 +3332,8 @@ jupyterlab = [
     {file = "jupyterlab-3.3.2.tar.gz", hash = "sha256:3c716bf5592cb28c5c55c615c6e5bd3efc71898f6957d13719b56478bbbb587a"},
 ]
 jupyterlab-pygments = [
-    {file = "jupyterlab_pygments-0.2.1-py2.py3-none-any.whl", hash = "sha256:05f8056a18fec9ebef01f705443d81edb16bb03d27371f23c0ae135a85a76029"},
-    {file = "jupyterlab_pygments-0.2.1.tar.gz", hash = "sha256:121da770930e348895f89d6bdfce7e7e6a8bb574162923f9c9ef5a20c61619c6"},
+    {file = "jupyterlab_pygments-0.2.2-py2.py3-none-any.whl", hash = "sha256:2405800db07c9f770863bcf8049a529c3dd4d3e28536638bd7c1c01d2748309f"},
+    {file = "jupyterlab_pygments-0.2.2.tar.gz", hash = "sha256:7405d7fde60819d905a9fa8ce89e4cd830e318cdad22a0030f7a901da705585d"},
 ]
 jupyterlab-server = [
     {file = "jupyterlab_server-2.12.0-py3-none-any.whl", hash = "sha256:db5d234955c5c2684f77a064345712f071acf7df31f0d8c31b420b33b09d6472"},
