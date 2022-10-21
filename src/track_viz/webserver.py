@@ -206,7 +206,7 @@ def fitbit_listruns() -> ft.ResponseReturnValue:
 
     response = json.loads(api_client.last_response.data)
     runs: List[Dict[str, Any]] = list(
-        filter(lambda a: a["activityName"] == "Run", response["activities"])
+        filter(lambda a: a["activityName"] in ["Run", "Walk"], response["activities"])
     )
 
     hrefs = [f'/fitbitloadrun?logid={r["logId"]}' for r in runs]

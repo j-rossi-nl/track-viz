@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "track-viz"
-version = "0.4.0"
+version = "0.5.0"
 description = "Visualize Tracking Data"
 authors = ["Julien Rossi <mr.julien.rossi@gmail.com>"]
 license = "MIT"
